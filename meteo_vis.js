@@ -39,10 +39,6 @@ function draw_map(){
         .append("path")
         .attr("d",path)
         .attr("class",function(d){return d.properties.prov_acr});
-
-        
-
-        draw_temp(svg)
         
         });
 }
@@ -53,14 +49,17 @@ function draw_temp(){
         
         for(row of meteo)
         {
-            svg.select("."+row.provincia).style("fill",temp_to_color(row.temp));
+            svg.select("."+row.provincia).style("fill",temp_to_color(row.temp_min));
         }
     });
 }
 
 function temp_to_color(temp){
-    console.log(temp)
-    return "yellow"
+    temp = temp-273,15
+    //color =  d3.scaleSqrt([-100, 0, 100], ["blue", "white", "red"])
+    color = d3.scale.sqrt().domain([-20, 0, 20, 40]).range(["blue","green", "yellow", "red"])
+    console.log(color(temp))
+    return color(temp)
 }
 
 function init(){
