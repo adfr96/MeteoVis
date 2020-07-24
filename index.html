@@ -20,9 +20,8 @@ path:hover {
 
 
 
-//var url = "https://gist.githubusercontent.com/mbostock/4090846/raw/d534aba169207548a8a3d670c9c2cc719ff05c47/us.json"
 //var url = '../geojson-italy/topojson/limits_IT_provinces.topo.json'
-var url = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_provinces.topo.json"
+var url = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
 d3.json(url, function(error, topology) {
   if (error) throw error;
     var width = 1200,
@@ -32,13 +31,18 @@ d3.json(url, function(error, topology) {
     .attr("width", width)
     .attr("height", height);
 
-    var projection = d3.geo.mercator()
-        .scale(3000).translate([width/8, height*7/2]);
+    var projection = d3.geo.albers()
+      .center([-12, 41])
+      .rotate([-15, 0])
+      .parallels([20, 40])
+      .scale(3000)
+      .translate([0, height/2]);
 
+    //.translate([width/8, height*7/2])
     var path = d3.geo.path().projection(projection);
     console.log("topojson", topology)
     var geojson = topojson.feature(topology, topology.objects.provinces);
-    //var geojson = topojson.feature(topology, topology.objects.counties);
+    
     console.log("geojson", geojson)
     /*
     svg.append("path")
@@ -46,11 +50,15 @@ d3.json(url, function(error, topology) {
         .attr("d", path);
     */
     svg.append("g")
+        .attr("class","italy")
         .selectAll("path")
         .data(geojson.features)
         .enter()
         .append("path")
         .attr("d",path);
+    italy = svg.selectAll(".italy")
+    console.log("italy", italy)
+    //italy.attr("transform", "translate(-500,2600)");
     
 });
 
