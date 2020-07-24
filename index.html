@@ -3,7 +3,7 @@
 <style>
 
 path {
-  fill: #ccc;
+  /*fill: #ccc;*/
   stroke: #fff;
   stroke-width: .5px;
 }
@@ -24,6 +24,7 @@ path:hover {
 var url = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
 d3.json(url, function(error, topology) {
   if (error) throw error;
+  console.log("topojson", topology)
     var width = 1200,
     height = 800;
 
@@ -40,10 +41,14 @@ d3.json(url, function(error, topology) {
 
     //.translate([width/8, height*7/2])
     var path = d3.geo.path().projection(projection);
-    console.log("topojson", topology)
-    var geojson = topojson.feature(topology, topology.objects.provinces);
     
-    console.log("geojson", geojson)
+    
+    var provinces = topojson.feature(topology, topology.objects.provinces);
+    var municipalities = topojson.feature(topology,topology.objects.municipalities)
+    
+    console.log("provinces", provinces)
+    console.log("municipalities", municipalities)
+    
     /*
     svg.append("path")
         .datum(geojson)
@@ -52,12 +57,15 @@ d3.json(url, function(error, topology) {
     svg.append("g")
         .attr("class","italy")
         .selectAll("path")
-        .data(geojson.features)
+        .data(provinces.features)
         .enter()
         .append("path")
-        .attr("d",path);
-    italy = svg.selectAll(".italy")
-    console.log("italy", italy)
+        .attr("d",path)
+        .attr("class",function(d){return d.properties.prov_acr});
+    
+    torino = svg.selectAll(".TO").attr("fill","yellow");
+    console.log(torino);
+    
     //italy.attr("transform", "translate(-500,2600)");
     
 });
