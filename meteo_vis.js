@@ -2,11 +2,19 @@
 var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
 //var meteo_file = "https://github.com/adfr96/MeteoVis/blob/master/dati_meteo.json"
 var meteo_file = "dati_meteo.json"
-var width = 1200,height = 800;
+var width = 800,height = 800;
 
 var svg = d3.select("body").append("svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height).call(d3.behavior.zoom().on("zoom", function () {
+                svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+              }));
+
+/**
+ * .call(d3.zoom().on("zoom", function () {
+                svg.attr("transform", d3.event.transform)
+             }))
+ */
 
 function draw_map(){
     d3.json(topology_file, function(error, topology) {
@@ -60,7 +68,7 @@ function draw_temp(){
 function temp_to_color(temp){
     temp = temp-273,15
     //color =  d3.scaleSqrt([-100, 0, 100], ["blue", "white", "red"])
-    color = d3.scale.sqrt().domain([-20, 0, 20, 40]).range(["blue","green", "yellow", "red"])
+    color = d3.scale.sqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
     //console.log(color(temp))
     return color(temp)
 }
