@@ -4,7 +4,8 @@ var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/m
 //var meteo_file = "dati_meteo.json"
 var width = 800,height = 800;
 
-//var meteo_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+var meteo_file = null
+var meteo_data = null
 //console.log(meteo_file)
 
 var svg = d3.select("body").append("svg")
@@ -50,11 +51,24 @@ function draw_map(){
 }
 
 function draw_temp(){
-    meteo_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    console.log("ora:",ora.value)
-    d3.json(meteo_file).then(function(meteo) {
-        
-        for(row of meteo)
+    new_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    if(new_file == meteo_file)
+    {
+        update_temperature(meteo_data) 
+    }
+    else
+    {
+        //console.log("update_file",new_file)
+        meteo_file = new_file
+        d3.json(meteo_file).then(function(meteo) {
+            meteo_data = meteo
+            update_temperature(meteo_data)        
+        });
+}
+}
+
+function update_temperature(meteo_data){
+    for(row of meteo_data)
         {   
             if(row.provincia != "" && row.ora==ora.value)
             {
@@ -64,7 +78,6 @@ function draw_temp(){
                     .style("fill",temp_to_color(row.media_temp));
             }
         }
-    });
 }
 
 function temp_to_color(temp){
