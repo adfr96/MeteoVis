@@ -4,25 +4,22 @@ var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/m
 var meteo_file = "dati_meteo.json"
 var width = 800,height = 800;
 
+var meteo_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+
 var svg = d3.select("body").append("svg")
             .attr("width", width)
-            .attr("height", height).call(d3.behavior.zoom().on("zoom", function () {
-                svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-              }));
-
-/**
- * .call(d3.zoom().on("zoom", function () {
+            .attr("height", height).call(d3.zoom().on("zoom", function () {
                 svg.attr("transform", d3.event.transform)
-             }))
- */
+             }));
+
 
 function draw_map(){
-    d3.json(topology_file, function(error, topology) {
-        if (error) throw error;
+    d3.json(topology_file).then( function(topology) {
+        
         console.log("topojson", topology)
         
 
-        var projection = d3.geo.albers()
+        var projection = d3.geoAlbers()
         .center([-12, 41])
         .rotate([-15, 0])
         .parallels([20, 40])
@@ -30,7 +27,7 @@ function draw_map(){
         .translate([0, height/2]);
 
         
-        var path = d3.geo.path().projection(projection);
+        var path = d3.geoPath().projection(projection);
 
         var provinces = topojson.feature(topology, topology.objects.provinces);
         var municipalities = topojson.feature(topology,topology.objects.municipalities)
@@ -52,14 +49,14 @@ function draw_map(){
 }
 
 function draw_temp(){
-    d3.json(meteo_file, function(error, meteo) {
-        if (error) throw error;
+    d3.json(meteo_file).then(function(meteo) {
         
         for(row of meteo)
         {   
-            if(row.provincia != "")
+            if(row['provincia'] != "" && row['ora']==ora.value)
             {
-                p = svg.select("."+row.provincia).style("fill",temp_to_color(row.temp_min));
+                //console.log(row.provincia,row.media_temp)
+                p = svg.select("."+row.provincia).style("fill",temp_to_color(row.media_temp));
             }
         }
     });
@@ -67,12 +64,13 @@ function draw_temp(){
 
 function temp_to_color(temp){
     temp = temp-273,15
-    color = d3.scale.sqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
-    
+    //color = d3.scale.sqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
+    color = d3.scaleSequential([-30, 50], d3.interpolateTurbo);
     return color(temp)
 }
 
 function init(){
+    
     draw_map();
     
     draw_temp();
