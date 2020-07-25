@@ -21,9 +21,8 @@ function draw_map(){
         .scale(3000)
         .translate([0, height/2]);
 
-        //.translate([width/8, height*7/2])
+        
         var path = d3.geo.path().projection(projection);
-
 
         var provinces = topojson.feature(topology, topology.objects.provinces);
         var municipalities = topojson.feature(topology,topology.objects.municipalities)
@@ -40,6 +39,7 @@ function draw_map(){
         .attr("d",path)
         .attr("class",function(d){return d.properties.prov_acr});
         
+        draw_temp();
         });
 }
 
@@ -48,8 +48,11 @@ function draw_temp(){
         if (error) throw error;
         
         for(row of meteo)
-        {
-            svg.select("."+row.provincia).style("fill",temp_to_color(row.temp_min));
+        {   
+            if(row.provincia != "")
+            {
+                p = svg.select("."+row.provincia).style("fill",temp_to_color(row.temp_min));
+            }
         }
     });
 }
@@ -58,12 +61,13 @@ function temp_to_color(temp){
     temp = temp-273,15
     //color =  d3.scaleSqrt([-100, 0, 100], ["blue", "white", "red"])
     color = d3.scale.sqrt().domain([-20, 0, 20, 40]).range(["blue","green", "yellow", "red"])
-    console.log(color(temp))
+    //console.log(color(temp))
     return color(temp)
 }
 
 function init(){
     draw_map();
+    
     draw_temp();
 }
 init();
