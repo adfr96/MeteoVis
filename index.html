@@ -13,8 +13,16 @@ path:hover {
 }
 
 </style>
+
+<head>
+
+	<script src="//d3js.org/d3.v5.min.js"></script>
+	<script src="//d3js.org/topojson.v1.min.js"></script>
+
+</head>
 <body>
-	<form action="index.html">
+	
+	<form action="JavaScript:draw_temp()">
   		<label for="anno">anno:</label><br>
   		<input type="text" id="anno" name="anno" value="2020"><br>
   		<label for="mese">mese:</label><br>
@@ -25,9 +33,5 @@ path:hover {
   		<input type="text" id="ora" name="ora" value="10"><br><br>
  	 	<input type="submit" value="Submit">
 	</form> 
-
-<script src="//d3js.org/d3.v5.min.js"></script>
-<script src="//d3js.org/topojson.v1.min.js"></script>
-<script type="text/javascript" src="meteo_vis_v5.js"></script>
-
+	<script type="text/javascript" src="meteo_vis_v5.js"></script>
 </body>

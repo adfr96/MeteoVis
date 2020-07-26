@@ -1,10 +1,12 @@
 //var url = '../geojson-italy/topojson/limits_IT_provinces.topo.json'
 var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
 //var meteo_file = "https://github.com/adfr96/MeteoVis/blob/master/dati_meteo.json"
-var meteo_file = "dati_meteo.json"
+//var meteo_file = "dati_meteo.json"
 var width = 800,height = 800;
 
-var meteo_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+var meteo_file = null
+var meteo_data = null
+//console.log(meteo_file)
 
 var svg = d3.select("body").append("svg")
             .attr("width", width)
@@ -49,23 +51,38 @@ function draw_map(){
 }
 
 function draw_temp(){
-    d3.json(meteo_file).then(function(meteo) {
-        
-        for(row of meteo)
+    new_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    if(new_file == meteo_file)
+    {
+        update_temperature(meteo_data) 
+    }
+    else
+    {
+        //console.log("update_file",new_file)
+        meteo_file = new_file
+        d3.json(meteo_file).then(function(meteo) {
+            meteo_data = meteo
+            update_temperature(meteo_data)        
+        });
+}
+}
+
+function update_temperature(meteo_data){
+    for(row of meteo_data)
         {   
-            if(row['provincia'] != "" && row['ora']==ora.value)
+            if(row.provincia != "" && row.ora==ora.value)
             {
                 //console.log(row.provincia,row.media_temp)
-                p = svg.select("."+row.provincia).style("fill",temp_to_color(row.media_temp));
+                p = svg.select("."+row.provincia)
+                    .attr("media_temp",row.media_temp)
+                    .style("fill",temp_to_color(row.media_temp));
             }
         }
-    });
 }
 
 function temp_to_color(temp){
-    temp = temp-273,15
-    //color = d3.scale.sqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
-    color = d3.scaleSequential([-30, 50], d3.interpolateTurbo);
+    //color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
+    color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
     return color(temp)
 }
 
