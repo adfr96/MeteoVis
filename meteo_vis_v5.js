@@ -44,7 +44,9 @@ function draw_map(){
         .enter()
         .append("path")
         .attr("d",path)
-        .attr("class",function(d){return d.properties.prov_acr});
+        .attr("class",function(d){return d.properties.prov_acr})
+        .on("mouseover",handleMouseOverProvinces)
+        .on("mouseout",handleMouseOutProvinces);
         
         draw_temp();
         });
@@ -84,6 +86,18 @@ function temp_to_color(temp){
     //color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
     color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
     return color(temp)
+}
+function handleMouseOverProvinces(d,i){
+    value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
+    x = d3.mouse(this)[0]
+    y = d3.mouse(this)[1]
+    svg.append("text")
+        .attr("class","value")
+        .attr("transform", "translate("+x+"," + y+ ")")
+        .text("province:"+this.className.baseVal+"\n media_temp:"+value)
+}
+function handleMouseOutProvinces(d,i){
+    svg.select(".value").remove();
 }
 
 function init(){
