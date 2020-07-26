@@ -51,7 +51,7 @@ function draw_map(){
 }
 
 function draw_temp(){
-    new_file = "TEMPERATURE/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    new_file = "DATA/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
     if(new_file == meteo_file)
     {
         update_temperature(meteo_data) 
