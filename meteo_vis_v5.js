@@ -51,8 +51,7 @@ function draw_map(){
         .on("mouseover",handleMouseOverProvinces)
         .on("mouseout",handleMouseOutProvinces);
         
-        //draw_temp();
-        draw_centroid(svg,path);
+        draw_temp();
         });
 }
 
@@ -104,25 +103,11 @@ function handleMouseOutProvinces(d,i){
     svg.select(".value").remove();
 }
 
-function draw_centroid(svg,path){
-    svg.append("g")
-        .attr("class","cerchi")
-        .data(provinces.features)
-        .enter()
-        .selectAll(".cerchi")
-        .append("circle")
-        .attr("cx",function(d){return getCentroid(d,path)})
-        .attr("r",10)
-        .attr("stroke","black");
-}
-function getCentroid(data,path){
-    cetroid = path.centroid(data)
-    console.log(centroid)
-    return centroid
-}
+
+
 function init(){
     
     draw_map();
-    
+    draw_temp();    
 }
 init();
