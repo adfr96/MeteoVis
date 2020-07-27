@@ -6,11 +6,13 @@ var width = 800,height = 800;
 
 var meteo_file = null
 var meteo_data = null
+var provinces = null
 //console.log(meteo_file)
 
 var svg = d3.select("body").append("svg")
             .attr("width", width)
-            .attr("height", height).call(d3.zoom().on("zoom", function () {
+            .attr("height", height)
+            .call(d3.zoom().on("zoom", function () {
                 svg.attr("transform", d3.event.transform)
              }));
 
@@ -31,9 +33,9 @@ function draw_map(){
         
         var path = d3.geoPath().projection(projection);
 
-        var provinces = topojson.feature(topology, topology.objects.provinces);
+        provinces = topojson.feature(topology, topology.objects.provinces);
         var municipalities = topojson.feature(topology,topology.objects.municipalities)
-
+        var regions = topojson.feature(topology,topology.objects.regions)
         console.log("provinces", provinces)
         console.log("municipalities", municipalities)
 
@@ -44,11 +46,13 @@ function draw_map(){
         .enter()
         .append("path")
         .attr("d",path)
+        .attr("c",path.centroid)
         .attr("class",function(d){return d.properties.prov_acr})
         .on("mouseover",handleMouseOverProvinces)
         .on("mouseout",handleMouseOutProvinces);
         
-        draw_temp();
+        //draw_temp();
+        draw_centroid(svg,path);
         });
 }
 
@@ -100,10 +104,25 @@ function handleMouseOutProvinces(d,i){
     svg.select(".value").remove();
 }
 
+function draw_centroid(svg,path){
+    svg.append("g")
+        .attr("class","cerchi")
+        .data(provinces.features)
+        .enter()
+        .selectAll(".cerchi")
+        .append("circle")
+        .attr("cx",function(d){return getCentroid(d,path)})
+        .attr("r",10)
+        .attr("stroke","black");
+}
+function getCentroid(data,path){
+    cetroid = path.centroid(data)
+    console.log(centroid)
+    return centroid
+}
 function init(){
     
     draw_map();
     
-    draw_temp();
 }
 init();
