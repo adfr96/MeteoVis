@@ -11,9 +11,7 @@ var width = 1000,height = 1000;
 
 var svg = d3.select("#svg").append("svg")
             .attr("width", width)
-            .attr("height", height)
-            
-            ;
+            .attr("height", height);
 /*call(d3.zoom().on("zoom", function () {
     main_g.attr("transform", d3.event.transform)
      }));
@@ -54,8 +52,10 @@ function draw_map(){
         .attr("class",function(d){return d.properties.prov_acr})
         .on("mouseover",handleMouseOverProvinces)
         .on("mouseout",handleMouseOutProvinces);
+        
+        draw_temp();
 
-        g_pressioni = svg.append("g").attr("class","cerchi");
+        g_pressioni = svg.append("g").attr("class","pressioni");
         draw_temp();
         //draw_circle(svg,path);
         draw_pressure();
@@ -194,9 +194,10 @@ function update_all(){
     draw_temp();
     draw_pressure();
 }
+
 function init(){
     
     draw_map();
-    
+    draw_temp();    
 }
 init();
