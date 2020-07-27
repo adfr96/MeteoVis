@@ -3,9 +3,10 @@
 <style>
 
 path {
-  fill: #ccc;
-  stroke:red;
+  fill:none;
+  stroke:black;
   stroke-width: .8px;
+  stroke-opacity: .3;
 }
 
 path:hover {
@@ -18,12 +19,12 @@ path:hover {
 
 	<script src="//d3js.org/d3.v5.min.js"></script>
 	<script src="//d3js.org/topojson.v1.min.js"></script>
-
+	
 </head>
 
 <body>
-	
-	<form action="JavaScript:draw_temp()">
+	<div>
+	<form action="JavaScript:update_all()">
   		<label for="anno">anno:</label><br>
   		<input type="text" id="anno" name="anno" value="2020"><br>
   		<label for="mese">mese:</label><br>
@@ -33,6 +34,7 @@ path:hover {
   		<label for="ora">ora:</label><br>
   		<input type="text" id="ora" name="ora" value="10"><br><br>
  	 	<input type="submit" value="Submit">
-	</form> 
-	<script type="text/javascript" src="meteo_vis_v5.js"></script>
+	</form>
+	</div> 
+	<div id="svg"><script type="text/javascript" src="meteo_vis_v5.js"></script></div>
 </body>

@@ -5,17 +5,19 @@ var meteo_data = null
 var provinces = null
 var pre_umid_file= null
 var pre_umid_data = null
-
+var centroid_map = {}
 
 var width = 1000,height = 1000;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#svg").append("svg")
             .attr("width", width)
             .attr("height", height)
-            .call(d3.zoom().on("zoom", function () {
-                svg.attr("transform", d3.event.transform)
-             }))
+            
             ;
+/*call(d3.zoom().on("zoom", function () {
+    main_g.attr("transform", d3.event.transform)
+     }));
+*/
 var path = null
 var g_pressioni = null;
 
@@ -57,6 +59,8 @@ function draw_map(){
         draw_temp();
         //draw_circle(svg,path);
         draw_pressure();
+
+        fill_centroif_map();
         });
 }
 
@@ -109,38 +113,33 @@ function handleMouseOutProvinces(d,i){
 }
 
 function draw_circle(prov){
-    
-        g_pressioni.selectAll("circle")
-        .data(provinces.features, function(d){ if(d.properties.prov_acr){return d}})
-        .enter()
-        .append("circle")
-        .attr("cx",function(d){return getCentroid(d,path)[0]})
-        .attr("cy",function(d){return getCentroid(d,path)[1]})
+    if(centroid_map[prov] != undefined)
+    {
+        g_pressioni.append("circle")
+        .attr("cx",centroid_map[prov][0])
+        .attr("cy",centroid_map[prov][1])
         .attr("r",3)
-        .attr("stroke","black")
+        .attr("stroke","gray")
         .attr("stroke-width",1.5)
-        .style("fill","none");
-    /*
-    svg.select("."+prov)
-            .append("circle")
-            .attr("cx",function(d){return getCentroid(d,path)[0]})
-            .attr("cy",function(d){return getCentroid(d,path)[1]})
-            .attr("r",3)
-            .attr("stroke","black")
-            .attr("stroke-width",1.5)
-            .style("fill","none");
-    */
+        .style("fill","gray");
+    }
+    else{console.log(prov)}
 }
 function draw_square(prov){
-    svg.select("."+prov)
-            .append("rect")
-            .attr("x", function(d){return getCentroid(d,path)[0]})
-            .attr("y", function(d){return getCentroid(d,path)[1]})
+    if(centroid_map[prov] != undefined)
+    {
+        g_pressioni.append("rect")
+            .attr("x", centroid_map[prov][0])
+            .attr("y", centroid_map[prov][1])
             .attr("width", 5)
             .attr("height", 5)
-            .attr("stroke","black")
+            .attr("stroke","gray")
             .attr("stroke-width",1.5)
-            .style("fill","none");
+            .style("fill","gray");
+    }
+    else{
+        console.log(prov)
+    }
 }
 
 function getCentroid(data,path){
@@ -166,9 +165,11 @@ function draw_pressure(){
 }
 
 function update_pressure(){
+    g_pressioni.selectAll("circle").remove();
+    g_pressioni.selectAll("rect").remove();
     for(row of pre_umid_data)
     {   
-        if(row.provincia != "" && row.ora==ora.value)
+        if(row.provincia != "nan" && row.ora==ora.value)
         {
             //console.log(row.pressione_media)
             if(row.pressione_media > 1013)
@@ -180,6 +181,18 @@ function update_pressure(){
             }
         }
     }
+}
+
+function fill_centroif_map(){
+    for(row of provinces.features){
+        centroid_map[row.properties.prov_acr] = getCentroid(row,path)
+    }
+    console.log(centroid_map)
+}
+
+function update_all(){
+    draw_temp();
+    draw_pressure();
 }
 function init(){
     
