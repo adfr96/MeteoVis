@@ -1,21 +1,23 @@
-//var url = '../geojson-italy/topojson/limits_IT_provinces.topo.json'
 var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
-//var meteo_file = "https://github.com/adfr96/MeteoVis/blob/master/dati_meteo.json"
-//var meteo_file = "dati_meteo.json"
-var width = 800,height = 800;
 
 var meteo_file = null
 var meteo_data = null
 var provinces = null
-//console.log(meteo_file)
+var pre_umid_file= null
+var pre_umid_data = null
+
+
+var width = 1000,height = 1000;
 
 var svg = d3.select("body").append("svg")
             .attr("width", width)
             .attr("height", height)
             .call(d3.zoom().on("zoom", function () {
                 svg.attr("transform", d3.event.transform)
-             }));
-
+             }))
+            ;
+var path = null
+var g_pressioni = null;
 
 function draw_map(){
     d3.json(topology_file).then( function(topology) {
@@ -27,11 +29,11 @@ function draw_map(){
         .center([-12, 41])
         .rotate([-15, 0])
         .parallels([20, 40])
-        .scale(3000)
+        .scale(3500)
         .translate([0, height/2]);
 
         
-        var path = d3.geoPath().projection(projection);
+        path = d3.geoPath().projection(projection);
 
         provinces = topojson.feature(topology, topology.objects.provinces);
         var municipalities = topojson.feature(topology,topology.objects.municipalities)
@@ -50,9 +52,11 @@ function draw_map(){
         .attr("class",function(d){return d.properties.prov_acr})
         .on("mouseover",handleMouseOverProvinces)
         .on("mouseout",handleMouseOutProvinces);
-        
+
+        g_pressioni = svg.append("g").attr("class","cerchi");
         draw_temp();
-        draw_centroid(svg,path);
+        //draw_circle(svg,path);
+        draw_pressure();
         });
 }
 
@@ -60,7 +64,7 @@ function draw_temp(){
     new_file = "DATA/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
     if(new_file == meteo_file)
     {
-        update_temperature(meteo_data) 
+        update_temperature(meteo_data);
     }
     else
     {
@@ -68,22 +72,22 @@ function draw_temp(){
         meteo_file = new_file
         d3.json(meteo_file).then(function(meteo) {
             meteo_data = meteo
-            update_temperature(meteo_data)        
+            update_temperature(meteo_data);      
         });
 }
 }
 
 function update_temperature(meteo_data){
     for(row of meteo_data)
-        {   
-            if(row.provincia != "" && row.ora==ora.value)
-            {
-                //console.log(row.provincia,row.media_temp)
-                p = svg.select("."+row.provincia)
-                    .attr("media_temp",row.media_temp)
-                    .style("fill",temp_to_color(row.media_temp));
-            }
+    {   
+        if(row.provincia != "" && row.ora==ora.value)
+        {
+            //console.log(row.provincia,row.media_temp)
+            p = svg.select("."+row.provincia)
+                .attr("media_temp",row.media_temp)
+                .style("fill",temp_to_color(row.media_temp));
         }
+    }
 }
 
 function temp_to_color(temp){
@@ -104,21 +108,78 @@ function handleMouseOutProvinces(d,i){
     svg.select(".value").remove();
 }
 
-function draw_centroid(svg,path){
-    svg.append("g")
-        .attr("class","cerchi")
-        .selectAll("circle")
-        .data(provinces.features)
+function draw_circle(prov){
+    
+        g_pressioni.selectAll("circle")
+        .data(provinces.features, function(d){ if(d.properties.prov_acr){return d}})
         .enter()
         .append("circle")
         .attr("cx",function(d){return getCentroid(d,path)[0]})
         .attr("cy",function(d){return getCentroid(d,path)[1]})
-        .attr("r",1)
-        .attr("stroke","black");
+        .attr("r",3)
+        .attr("stroke","black")
+        .attr("stroke-width",1.5)
+        .style("fill","none");
+    /*
+    svg.select("."+prov)
+            .append("circle")
+            .attr("cx",function(d){return getCentroid(d,path)[0]})
+            .attr("cy",function(d){return getCentroid(d,path)[1]})
+            .attr("r",3)
+            .attr("stroke","black")
+            .attr("stroke-width",1.5)
+            .style("fill","none");
+    */
 }
+function draw_square(prov){
+    svg.select("."+prov)
+            .append("rect")
+            .attr("x", function(d){return getCentroid(d,path)[0]})
+            .attr("y", function(d){return getCentroid(d,path)[1]})
+            .attr("width", 5)
+            .attr("height", 5)
+            .attr("stroke","black")
+            .attr("stroke-width",1.5)
+            .style("fill","none");
+}
+
 function getCentroid(data,path){
-    return (path.centroid)(data) 
+    return (path.centroid)(data) ;
     
+}
+
+function draw_pressure(){
+    new_file = "DATA/pre_umid_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    if(new_file == pre_umid_file)
+    {
+        update_pressure(pre_umid_data);
+    }
+    else
+    {
+        //console.log("update_file",new_file)
+        pre_umid_file = new_file
+        d3.json(pre_umid_file).then(function(pre_umid) {
+            pre_umid_data = pre_umid
+            update_pressure(pre_umid_data);        
+        });
+    }
+}
+
+function update_pressure(){
+    for(row of pre_umid_data)
+    {   
+        if(row.provincia != "" && row.ora==ora.value)
+        {
+            //console.log(row.pressione_media)
+            if(row.pressione_media > 1013)
+            {
+                draw_circle(row.provincia);
+            }
+            else{
+                draw_square(row.provincia);
+            }
+        }
+    }
 }
 function init(){
     
