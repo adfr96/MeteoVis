@@ -3,7 +3,7 @@
 <style>
 
 path {
-  fill:none;
+  fill: #ccc;
   stroke:black;
   stroke-width: .8px;
   stroke-opacity: .3;
@@ -23,18 +23,73 @@ path:hover {
 </head>
 
 <body>
-	<div>
+	<table>
+		<tr>
+			<h1>InfoVis Project</h1>
+		</tr>
+		<tr>
 	<form action="JavaScript:update_all()">
-  		<label for="anno">anno:</label><br>
-  		<input type="text" id="anno" name="anno" value="2020"><br>
-  		<label for="mese">mese:</label><br>
-  		<input type="text" id="mese" name="mese" value="7"><br><br>
-  		<label for="giorno">giorno:</label><br>
-  		<input type="text" id="giorno" name="giorno" value="18"><br>
-  		<label for="ora">ora:</label><br>
-  		<input type="text" id="ora" name="ora" value="10"><br><br>
- 	 	<input type="submit" value="Submit">
+		<td>
+  			<label for="anno">anno:</label>
+			<input type="text" id="anno" name="anno" value="2020">
+		</td>
+		<td>
+  			<label for="mese">mese:</label>
+			<input type="text" id="mese" name="mese" value="7">
+		</td>
+		<td>
+			<label for="giorno">giorno:</label>
+			<input type="text" id="giorno" name="giorno" value="18">
+		</td>  
+		<td>
+			<label for="ora">ora:</label>
+  			<input type="text" id="ora" name="ora" value="10">
+		</td>
+		<td><input type="submit" value="Submit"></td>
 	</form>
-	</div> 
-	<div id="svg"><script type="text/javascript" src="meteo_vis_v5.js"></script></div>
+	</tr>
+	</table>
+	
+	<table align="left">
+		<tr>
+			<td id="svg">
+				<script type="text/javascript" src="meteo_vis_v5.js"></script>
+			</td>
+		</tr>
+	</table>
+	
+	<table >
+		<tr>
+			<br>Selettore Temperatura <br>
+			<form>
+				<input type="radio" id="tempOn" name="t_form" value= "on" onclick="show_temp(true)" checked>
+				<label for="tempOn"> Show Temperature</label><br>
+				<input type="radio" id="tempOff" name="t_form" value="off" onclick="show_temp(false)">
+				<label for="tempOff"> Hide Temperature</label>
+				<span class="switch"></span>
+			</form>
+		</tr>
+		<tr>
+			<br>Selettore pressione <br>
+			<form>
+				<input type="radio" id="pressureOn" name="p_form" value= "on" onclick="show_pressure(true)" checked >
+				<label for="pressureOn"> Show Pressure</label><br>
+				<input type="radio" id="pressureOff" name="p_form" value="off" onclick="show_pressure(false)" >
+				<label for="pressureOFF"> Hide Pressure</label
+				<span class="switch"></span>
+			</form>
+		</tr>
+		<tr>
+			<td>
+				qui legende
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<textarea id="info_area" rows="10" cols="50">qui mettiamo le info sulla provincia selezionata</textarea>
+			</td>
+		</tr>
+		
+	</tr>
+		</table>
 </body>
