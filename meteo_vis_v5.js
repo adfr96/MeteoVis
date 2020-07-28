@@ -17,13 +17,23 @@ var width = 800,height = 1000;
 var svg = d3.select("#svg").append("svg")
             .attr("width", width)
             .attr("height", height);
-/*call(d3.zoom().on("zoom", function () {
-    main_g.attr("transform", d3.event.transform)
-     }));
-*/
+
+const zoom = d3.zoom()
+      .scaleExtent([1, 5])
+      .on('zoom', zoomed);
+
+svg.call(zoom);
 var path = null
 var g_pressioni = null;
 
+function zoomed() {
+    svg.select(".italy")
+      .selectAll('path') // To prevent stroke width from scaling
+      .attr('transform', d3.event.transform);
+    svg.select(".pressioni")
+      .selectAll(".p") // To prevent stroke width from scaling
+      .attr("transform", d3.event.transform);
+  }
 function draw_map(){
     return d3.json(topology_file).then( function(topology) {
         
@@ -35,7 +45,7 @@ function draw_map(){
         .rotate([-15, 0])
         .parallels([20, 40])
         .scale(3500)
-        .translate([0, height/2]);
+        .translate([0, height/(2.5)]);
 
         
         path = d3.geoPath().projection(projection);
@@ -113,6 +123,7 @@ function draw_circle(prov){
     if(centroid_map[prov] != undefined)
     {
         g_pressioni.append("circle")
+        .attr("class","p")
         .attr("cx",centroid_map[prov][0])
         .attr("cy",centroid_map[prov][1])
         .attr("r",3)
@@ -126,6 +137,7 @@ function draw_square(prov){
     if(centroid_map[prov] != undefined)
     {
         g_pressioni.append("rect")
+            .attr("class","p")
             .attr("x", centroid_map[prov][0])
             .attr("y", centroid_map[prov][1])
             .attr("width", 5)
@@ -213,6 +225,10 @@ function show_temp(show){
 function fill_centroid_map(){
     for(row of provinces.features){
         centroid_map[row.properties.prov_acr] = getCentroid(row,path)
+        if(row.properties.prov_acr == "VC")
+        {
+            centroid_map[row.properties.prov_acr][1] += 12
+        }
     }
 }
 
