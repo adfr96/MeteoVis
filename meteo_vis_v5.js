@@ -1,16 +1,27 @@
 var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
 
+var provinces = null
+
 var temp_file = null
 var temp_data = null //lista di oggetti con le temperature per provincia
-var provinces = null
+
 var pre_umid_file= null
 var pre_umid_data = null
+
+var rain_file = null
+var rain_data = null
+
 var centroid_map = {}
 
 var temp_legend = {
     color: d3.scaleSequential([-20, 45], d3.interpolateTurbo),
     title: "Temperature"
 }
+
+var rain_legend = {
+    color: d3.scaleSequentialSqrt([0, 30], d3.interpolateBlues),
+    title: "Sum of rain"
+  }
 
 var width = 800,height = 1000;
 
@@ -26,6 +37,10 @@ svg.call(zoom);
 var path = null
 var g_pressioni = null;
 
+var width_legend = 350;
+var height_legend = 100;
+var svg_legende = null;
+
 function zoomed() {
     svg.select(".italy")
       .selectAll('path') // To prevent stroke width from scaling
@@ -35,10 +50,7 @@ function zoomed() {
       .attr("transform", d3.event.transform);
   }
 function draw_map(){
-    return d3.json(topology_file).then( function(topology) {
-        
-        console.log("topojson", topology)
-        
+    return d3.json(topology_file).then( function(topology) {       
 
         var projection = d3.geoAlbers()
         .center([-12, 41])
@@ -53,8 +65,6 @@ function draw_map(){
         provinces = topojson.feature(topology, topology.objects.provinces);
         var municipalities = topojson.feature(topology,topology.objects.municipalities)
         var regions = topojson.feature(topology,topology.objects.regions)
-        console.log("provinces", provinces)
-        console.log("municipalities", municipalities)
 
         svg.append("g")
         .attr("class","italy")
@@ -87,6 +97,7 @@ function draw_temp(){
             update_temperature(temp_data);      
         });
     }
+    draw_temp_legend();
 }
 
 function update_temperature(temp_data){
@@ -196,7 +207,7 @@ function remove_pressure(){
     g_pressioni.selectAll("rect").remove();
 }
 
-function remove_temp(){
+function remove_color(){
     svg.selectAll("path").style("fill","#ccc")
 }
 
@@ -214,11 +225,11 @@ function show_pressure(show){
 function show_temp(show){
     if(show)
     {
-        update_temperature(meteo_data)
+        draw_temp();
     }
     else
     {
-        remove_temp();
+        remove_color();
     }
 }
 
@@ -236,23 +247,19 @@ function update_all(){
     draw_temp();
     draw_pressure();
 }
-
+function remove_legend(){
+    svg_legende.select(".legend").remove();
+}
 function draw_temp_legend(){
-    width = 350;
-    height = 100;
-    var svg_legende = d3.select("#legende").append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("viewBox", [0, 0, width, height])
-            .style("overflow", "visible")
-            .style("display", "block");
 
-
+    remove_legend();
+    console.log("qui")
     svg_legende.append("image")
+        .attr("class","legend")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", width_legend)
+        .attr("height", height_legend)
         .attr("preserveAspectRatio", "none")
         .attr("xlink:href", "temp_legend.png");
     
@@ -290,14 +297,87 @@ function get_pressure_from_data(prov){
         }
     }
 }
+
+function draw_rain_color(){
+    new_file = "DATA/rain_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    
+
+    if(new_file == rain_file)
+    {
+        update_rain_color(rain_data);
+    }
+    else
+    {
+        console.log("update_rain_file",new_file)
+        rain_file = new_file
+        d3.json(rain_file).then(function(meteo) {
+            rain_data = meteo
+            console.log(rain_data)
+            update_rain_color(rain_data);      
+        });
+    }
+    remove_legend()
+    draw_rain_color_legend()
+}
+
+function update_rain_color(rain_data){
+    for(row of rain_data)
+    {   
+        if(row.provincia != "" && row.ora==ora.value)
+        {
+            //console.log(row.provincia,row.media_temp)
+            p = svg.select("."+row.provincia)
+                .attr("sum_rain",row.sum_rain)
+                .style("fill",rain_to_color(row.sum_rain));
+        }
+    }
+}
+
+function rain_to_color(sum_rain){
+    return rain_legend.color(sum_rain);
+}
+
+function show_rain_color(show){
+    if(show)
+    {
+        draw_rain_color()
+    }
+    else
+    {
+        remove_color();
+    }
+}
+
+function draw_rain_color_legend(){
+
+    remove_legend();
+    console.log("qui")
+    svg_legende.append("image")
+        .attr("class","legend")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width_legend)
+        .attr("height", height_legend)
+        .attr("preserveAspectRatio", "none")
+        .attr("xlink:href", "rain_legend.png");
+    
+    
+}
 async function init(){
     await draw_map();
     fill_centroid_map(); 
+    svg_legende = d3.select("#legende").append("svg")
+        .attr("width", width_legend)
+        .attr("height", height_legend)
+        .attr("viewBox", [0, 0, width_legend, height_legend])
+        .style("overflow", "visible")
+        .style("display", "block");   
     
     draw_temp();
-    g_pressioni = svg.append("g").attr("class","pressioni");   
+    g_pressioni = svg.append("g").attr("class","pressioni");
+    
     draw_pressure();
-    draw_temp_legend();
+    
     
 }
 init();
