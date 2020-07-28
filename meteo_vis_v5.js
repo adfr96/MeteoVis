@@ -7,6 +7,11 @@ var pre_umid_file= null
 var pre_umid_data = null
 var centroid_map = {}
 
+var temp_legend = {
+    color: d3.scaleSequential([-20, 45], d3.interpolateTurbo),
+    title: "Temperature"
+}
+
 var width = 800,height = 1000;
 
 var svg = d3.select("#svg").append("svg")
@@ -88,9 +93,7 @@ function update_temperature(meteo_data){
 }
 
 function temp_to_color(temp){
-    //color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
-    color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
-    return color(temp)
+    return temp_legend.color(temp)
 }
 function handleMouseOverProvinces(d,i){
     value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
@@ -136,8 +139,7 @@ function draw_square(prov){
 }
 
 function getCentroid(data,path){
-    return (path.centroid)(data) ;
-    
+    return (path.centroid)(data); 
 }
 
 function draw_pressure(){
@@ -184,6 +186,7 @@ function remove_pressure(){
 function remove_temp(){
     svg.selectAll("path").style("fill","#ccc")
 }
+
 function show_pressure(show){
     if(show)
     {
@@ -205,16 +208,38 @@ function show_temp(show){
         remove_temp();
     }
 }
+
 function fill_centroid_map(){
     for(row of provinces.features){
         centroid_map[row.properties.prov_acr] = getCentroid(row,path)
     }
-    //console.log(centroid_map)
 }
 
 function update_all(){
     draw_temp();
     draw_pressure();
+}
+
+function draw_temp_legend(){
+    width = 350;
+    height = 100;
+    var svg_legende = d3.select("#legende").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, width, height])
+            .style("overflow", "visible")
+            .style("display", "block");
+
+
+    svg_legende.append("image")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("preserveAspectRatio", "none")
+        .attr("xlink:href", "temp_legend.png");
+    
+    
 }
 
 async function init(){
@@ -224,7 +249,7 @@ async function init(){
     draw_temp();
     g_pressioni = svg.append("g").attr("class","pressioni");   
     draw_pressure();
-
+    draw_temp_legend();
     
 }
 init();
