@@ -1,7 +1,7 @@
 var topology_file = "https://raw.githubusercontent.com/openpolis/geojson-italy/master/topojson/limits_IT_all.topo.json"
 
-var meteo_file = null
-var meteo_data = null
+var temp_file = null
+var temp_data = null //lista di oggetti con le temperature per provincia
 var provinces = null
 var pre_umid_file= null
 var pre_umid_data = null
@@ -53,34 +53,34 @@ function draw_map(){
         .enter()
         .append("path")
         .attr("d",path)
-        .attr("c",path.centroid)
         .attr("class",function(d){return d.properties.prov_acr})
         .on("mouseover",handleMouseOverProvinces)
-        .on("mouseout",handleMouseOutProvinces);
+        .on("mouseout",handleMouseOutProvinces)
+        .on("click",handleMouseClickProvinces);
 
         });
 }
 
 function draw_temp(){
     new_file = "DATA/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    console.log(meteo_file)
-    if(new_file == meteo_file)
+    console.log(temp_file)
+    if(new_file == temp_file)
     {
-        update_temperature(meteo_data);
+        update_temperature(temp_data);
     }
     else
     {
         //console.log("update_file",new_file)
-        meteo_file = new_file
-        d3.json(meteo_file).then(function(meteo) {
-            meteo_data = meteo
-            update_temperature(meteo_data);      
+        temp_file = new_file
+        d3.json(temp_file).then(function(meteo) {
+            temp_data = meteo
+            update_temperature(temp_data);      
         });
     }
 }
 
-function update_temperature(meteo_data){
-    for(row of meteo_data)
+function update_temperature(temp_data){
+    for(row of temp_data)
     {   
         if(row.provincia != "" && row.ora==ora.value)
         {
@@ -97,12 +97,13 @@ function temp_to_color(temp){
 }
 function handleMouseOverProvinces(d,i){
     value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
+    id_prov = (this.getAttribute("class"))
     x = d3.mouse(this)[0]
     y = d3.mouse(this)[1]
     svg.append("text")
         .attr("class","value")
         .attr("transform", "translate("+x+"," + y+ ")")
-        .text("province:"+this.className.baseVal+"\n media_temp:"+value)
+        .text("province:"+id_prov)
 }
 function handleMouseOutProvinces(d,i){
     svg.select(".value").remove();
@@ -167,11 +168,11 @@ function update_pressure(){
         {
             // TODO: soglie scelte dall'utente
             
-            if(row.pressione_media > 1015)
+            if(row.pressione_media > 1014)
             {
                 draw_circle(row.provincia);
             }
-            if(row.pressione_media < 1008){
+            if(row.pressione_media < 1011){
                 draw_square(row.provincia);
             }
         }
@@ -242,6 +243,37 @@ function draw_temp_legend(){
     
 }
 
+function handleMouseClickProvinces(d,i){
+    id_prov = (this.getAttribute("class"))
+    d3.select("#info_area").select("#province")
+        .text("province:"+id_prov);
+
+    d3.select("#info_area").select("#temp")
+    .text("temperatura media:"+get_temp_from_data(id_prov));
+
+    d3.select("#info_area").select("#pressure")
+    .text("pressione media:"+get_pressure_from_data(id_prov));
+}
+
+function get_temp_from_data(prov){
+    for(row of temp_data)
+    {   
+        if(row.provincia == prov && row.ora==ora.value)
+        {
+            return row.media_temp
+        }
+    }
+}
+
+function get_pressure_from_data(prov){
+    for(row of pre_umid_data)
+    {   
+        if(row.provincia == prov && row.ora==ora.value)
+        {
+            return row.pressione_media
+        }
+    }
+}
 async function init(){
     await draw_map();
     fill_centroid_map(); 
