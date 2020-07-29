@@ -24,15 +24,22 @@ function update_color(){
     if(flag_colore == "temp")
     {
         draw_temp();
+        return
     }
     if(flag_colore == "rain")
     {
         draw_rain_color();
+        return
     }
     if(flag_colore == "wind")
     {
         draw_wind_intensity();
-    } 
+        return
+    }
+    if(flag_colore == "pressure")
+    {
+        draw_pressure_color();
+    }
 }
 
 function update_over_map(show){

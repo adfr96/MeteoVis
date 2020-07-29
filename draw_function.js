@@ -58,19 +58,11 @@ function update_temperature(temp_data){
             //console.log(row.provincia,row.media_temp)
             p = svg.select("."+row.provincia)
                 .attr("media_temp",row.media_temp)
-                .style("fill",temp_to_color(row.media_temp));
+                .style("fill",temp_legend.color(row.media_temp));
         }
     }
 }
 
-function temp_to_color(temp){
-    return temp_legend.color(temp)
-}
-function wind_to_color(wind_speed) {
-    w_f = parseFloat(wind_speed);
-    //console.log(w_f)
-    return wind_intensity_legend.color(w_f)   
-}
 function draw_wind_intensity() {
     new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
     //console.log(wind_file)
@@ -95,7 +87,7 @@ function update_wind_intensity(wind_data) {
             
             p = svg.select("."+row.provincia)
                 .attr("wind_speed",row.wind_speed_max)
-                .style("fill",wind_to_color(row.wind_speed_max));
+                .style("fill",wind_intensity_legend.color(parseFloat(row.wind_speed_max)) );
         }
     }
 }
@@ -126,6 +118,7 @@ function draw_wind_deg() {
         });
     }
 }
+
 function draw_arrow(prov,wind_deg) {
     if(centroid_map[prov] != undefined)
     {
@@ -192,7 +185,6 @@ function draw_square(prov){
         console.log(prov)
     }
 }
-
 
 function draw_pressure(){
     new_file = "DATA/pre_umid_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
@@ -313,8 +305,7 @@ function draw_rain_color(){
             update_rain_color(rain_data);      
         });
     }
-    remove_legend()
-    draw_rain_color_legend()
+    draw_rain_color_legend();
 }
 
 function update_rain_color(rain_data){
@@ -344,7 +335,7 @@ function draw_rain_color_legend(){
         .attr("width", width_legend)
         .attr("height", height_legend)
         .attr("preserveAspectRatio", "none")
-        .attr("xlink:href", "rain_legend.png");
+        .attr("xlink:href", "Legends/rain_legend.png");
 }
 
 function draw_temp_legend(){
@@ -358,7 +349,7 @@ function draw_temp_legend(){
         .attr("width", width_legend)
         .attr("height", height_legend)
         .attr("preserveAspectRatio", "none")
-        .attr("xlink:href", "temp_legend.png");   
+        .attr("xlink:href", "Legends/temp_legend.png");   
 }
 
 function draw_wind_color_legend(){
@@ -370,7 +361,19 @@ function draw_wind_color_legend(){
         .attr("width", width_legend)
         .attr("height", height_legend)
         .attr("preserveAspectRatio", "none")
-        .attr("xlink:href", "wind_legend.png");
+        .attr("xlink:href", "Legends/wind_legend.png");
+}
+
+function draw_pressure_color_legend(){
+    remove_legend();
+    svg_legende.append("image")
+        .attr("class","legend")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width_legend)
+        .attr("height", height_legend)
+        .attr("preserveAspectRatio", "none")
+        .attr("xlink:href", "Legends/pressure_legend.png");
 }
 
 function draw_pressure_legend(){
@@ -409,3 +412,36 @@ function draw_pressure_legend(){
             .text("Low Pressure (<1011 hPa)")
             .style("font","italic 10px sans-serif");
 }
+
+
+function draw_pressure_color(){
+    new_file = "DATA/pre_umid_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    if(new_file == pre_umid_file)
+    {
+        update_pressure_color(pre_umid_data);
+    }
+    else
+    {
+        //console.log("update_file",new_file)
+        pre_umid_file = new_file
+        d3.json(pre_umid_file).then(function(pre_umid) {
+            pre_umid_data = pre_umid
+            update_pressure_color(pre_umid_data);        
+        });
+    }
+    draw_pressure_color_legend();
+}
+
+
+function update_pressure_color(){
+    for(row of pre_umid_data)
+    {   
+        if(row.provincia != "nan" && row.ora==ora.value)
+        {
+            p = svg.select("."+row.provincia)
+                .attr("pressure",row.pressione_media)
+                .style("fill",pressure_legend.color(row.pressione_media));
+        }
+    }
+}
+

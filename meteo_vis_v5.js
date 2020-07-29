@@ -24,6 +24,10 @@ var temp_legend = {
     title: "Temperature"
 }
 
+var pressure_legend = {
+    color: d3.scaleSqrt([900,993, 1013,1023,1100], ["DarkBlue","blue", "white", "red","DarkRed"]),
+    title: "Pressure"
+}
 var rain_legend = {
     color: d3.scaleSequentialSqrt([0, 30], d3.interpolateBlues),
     title: "Sum of rain"
