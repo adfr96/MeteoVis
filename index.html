@@ -60,12 +60,14 @@ path:hover {
 	
 	<table >
 		<tr>
-			<br>Selettore Temperatura <br>
+			<br><h5>What show with color?</h5><br>
 			<form>
 				<input type="radio" id="tempOn" name="t_form" value= "on" onclick="show_temp(true)" checked>
-				<label for="tempOn"> Show Temperature</label><br>
-				<input type="radio" id="tempOff" name="t_form" value="off" onclick="show_temp(false)">
-				<label for="tempOff"> Hide Temperature</label>
+				<label for="tempOn"> Temperature</label>
+				<input type="radio" id="rain_color_on" name="t_form" value="off" onclick="show_rain_color(true)">
+				<label for="rain_color_on"> Rain</label>
+				<input type="radio" id="color_off" name="t_form" value="off" onclick="remove_color()">
+				<label for="rain_color_on"> Nothing</label>
 				<span class="switch"></span>
 			</form>
 		</tr>
@@ -80,13 +82,18 @@ path:hover {
 			</form>
 		</tr>
 		<tr>
-			<td>
+			<td id="legende">
 				qui legende
 			</td>
 		</tr>
 		<tr>
 			<td>
-			<textarea id="info_area" rows="10" cols="50">qui mettiamo le info sulla provincia selezionata</textarea>
+			<ul id="info_area">
+				<h3>Dettagli provincia selezionata:</h3>
+				<li id="province"><br></li>
+				<li id="temp"><br> </li>
+				<li id="pressure"><br> </li>
+			</ul>
 			</td>
 		</tr>
 		
