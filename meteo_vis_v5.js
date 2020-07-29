@@ -15,6 +15,8 @@ var wind_file = null
 var wind_data = null
 
 var g_wind =null;
+var g_rain = null;
+var g_pressioni = null;
 
 var centroid_map = {}
 
@@ -40,7 +42,7 @@ const zoom = d3.zoom()
 
 svg.call(zoom);
 var path = null
-var g_pressioni = null;
+
 
 var width_legend = 350;
 var height_legend = 100;
@@ -88,7 +90,7 @@ function draw_map(){
 
 function draw_temp(){
     new_file = "DATA/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    console.log(temp_file)
+    //console.log(temp_file)
     if(new_file == temp_file)
     {
         update_temperature(temp_data);
@@ -128,7 +130,7 @@ function wind_to_color(wind_speed) {
 }
 function draw_wind() {
     new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    console.log(wind_file)
+    //console.log(wind_file)
     if (new_file == wind_file) {
         update_wind(wind_data);
     }
@@ -321,7 +323,9 @@ function fill_centroid_map(){
 
 function update_all(){
     draw_temp();
-    draw_pressure();
+    //draw_pressure();
+    //draw_wind();
+    draw_rain();
 }
 function remove_legend(){
     svg_legende.select(".legend").remove();
@@ -337,11 +341,72 @@ function draw_temp_legend(){
         .attr("width", width_legend)
         .attr("height", height_legend)
         .attr("preserveAspectRatio", "none")
-        .attr("xlink:href", "temp_legend.png");
-    
-    
+        .attr("xlink:href", "temp_legend.png");   
 }
 
+function draw_rain(){
+    new_file = "DATA/rain_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    //console.log(rain_file)
+    if (new_file == rain_file) {
+        update_rain(rain_data);
+    }
+    else {
+        rain_file = new_file
+        d3.json(rain_file).then(function(meteo) {
+            rain_data = meteo
+            update_rain(rain_data);
+        });
+    }
+}
+
+function update_rain(rain_data) {
+    remove_pressure();
+    for(row of rain_data)
+    {   
+        if(row.provincia != "nan" && row.ora==ora.value)
+        {
+            draw_rect(row.provincia,row.sum_rain)
+        }
+    }
+}
+function draw_rect(prov,mm_rain) {
+    console.log(mm_rain)
+    if(centroid_map[prov] != undefined)
+    {
+        var h = scaleLinearRain(mm_rain)
+        g_pressioni.append("rect")
+            .attr("class","p")
+            .attr("x", centroid_map[prov][0])
+            .attr("y", centroid_map[prov][1]-h/2)
+            .attr("width", 5)
+            .attr("height", h)
+            .attr("stroke","gray")
+            .attr("stroke-width",1)
+            .style("fill","black");
+    }
+    else{
+        console.log(prov)
+    }
+}
+function scaleLinearRain(mm_rain){
+    var max = valMax(rain_data,"sum_rain")
+    console.log("max: ",max)
+    var myscale = d3.scaleLinear().domain([0,max]).range([0,15])
+    //console.log("mm_rain: "+mm_rain)
+    //console.log("mm_rain scala: "+myscale(mm_rain))
+    return myscale(mm_rain)
+    
+}
+function valMax(data,val) {
+    var max = 0
+    for (row of data) {
+        if (row.sum_rain > max && row.ora==ora.value) {
+            max = row.sum_rain
+        }
+    }
+    //console.log(max)
+    return max
+}
 function handleMouseClickProvinces(d,i){
     id_prov = (this.getAttribute("class"))
     d3.select("#info_area").select("#province")
@@ -384,11 +449,11 @@ function draw_rain_color(){
     }
     else
     {
-        console.log("update_rain_file",new_file)
+        //console.log("update_rain_file",new_file)
         rain_file = new_file
         d3.json(rain_file).then(function(meteo) {
             rain_data = meteo
-            console.log(rain_data)
+            //console.log(rain_data)
             update_rain_color(rain_data);      
         });
     }
@@ -452,9 +517,14 @@ async function init(){
     draw_temp();
     g_pressioni = svg.append("g").attr("class","pressioni");
     
-    draw_pressure();
+    //draw_pressure();
     
     g_wind = svg.append("g").attr("class","wind");
+
+    //draw_wind();
+
+    g_rain = svg.append("g").attr("class","rain")
     
+    draw_rain()
 }
 init();
