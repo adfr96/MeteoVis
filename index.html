@@ -82,7 +82,9 @@ path:hover {
 				<label for="pressureOn"> Pressure</label>
 				<input type="radio" id="windOn" name="over" value="off" onclick="update_over_map('wind')" >
 				<label for="windOn"> Wind degree</label>
-				<input type="radio" id="over_off" name="over" value="off" onclick="remove_over()" checked>
+				<input type="radio" id="rainOn" name="over" value="off" onclick="update_over_map('rain')" >
+				<label for="rainOn">Sum of Rain</label>
+				<input type="radio" id="over_off" name="over" value="off" onclick="handle_remove_over()" checked>
 				<label for="over_off"> Nothing</label>
 				<span class="switch"></span>
 			</form>
@@ -96,9 +98,6 @@ path:hover {
 			<td>
 			<ul id="info_area">
 				<h3>Dettagli provincia selezionata:</h3>
-				<li id="province"><br></li>
-				<li id="temp"><br> </li>
-				<li id="pressure"><br> </li>
 			</ul>
 			</td>
 		</tr>

@@ -15,18 +15,7 @@ function handleMouseOutProvinces(d,i){
 
 
 function update_color_map(show){
-    if(show == "temp")
-    {
-        flag_colore = "temp";
-    }
-    if(show == "rain")
-    {
-        flag_colore = "rain";
-    }
-    if(show == "wind")
-    {
-        flag_colore = "wind";
-    }
+    flag_colore = show;
     update_color()
 }
 
@@ -47,31 +36,23 @@ function update_color(){
 }
 
 function update_over_map(show){
-    if(show == "pressure")
-    {
-        flag_over = "pressure";
-    }
-    if(show == "rain")
-    {
-        flag_over = "rain";
-    }
-    if(show == "wind")
-    {
-        flag_over = "wind";
-    }
+    flag_over = show;
+    
     update_over();
 }
 
 
 function update_over(){
     remove_over();
+    console.log(flag_over)
     if(flag_over == "pressure")
     {
+        console.log("draw pressure")
         draw_pressure();
     }
     if(flag_over == "rain")
     {
-        //a breve
+        draw_rain();
     }
     if(flag_over == "wind")
     {
@@ -87,14 +68,27 @@ function update_all(){
 
 function handleMouseClickProvinces(d,i){
     id_prov = (this.getAttribute("class"))
-    d3.select("#info_area").select("#province")
+
+    d3.select("#info_area").selectAll("li").remove();
+
+    d3.select("#info_area").append("li")
         .text("province:"+id_prov);
 
-    d3.select("#info_area").select("#temp")
-    .text("temperatura media:"+get_temp_from_data(id_prov));
+    d3.select("#info_area").append("li")
+    .text("temperatura media:"+get_temp_from_data(id_prov)+" °C");
 
-    d3.select("#info_area").select("#pressure")
-    .text("pressione media:"+get_pressure_from_data(id_prov));
+    d3.select("#info_area").append("li")
+    .text("pressione media:"+get_pressure_from_data(id_prov)+" hPa");
+
+    w = get_wind_from_data(id_prov)
+    d3.select("#info_area").append("li")
+    .text("Vento Massimo:"+w[0]+" m/s");
+
+    d3.select("#info_area").append("li")
+    .text("Angolo Vento Massimo:"+w[1]+"°");
+
+    d3.select("#info_area").append("li")
+    .text("Somma Pioggia:"+get_rain_from_data(id_prov)+" mm");
 }
 
 function get_temp_from_data(prov){
@@ -117,6 +111,25 @@ function get_pressure_from_data(prov){
     }
 }
 
+function get_rain_from_data(prov){
+    for(row of rain_data)
+    {   
+        if(row.provincia == prov && row.ora==ora.value)
+        {
+            return parseFloat(row.sum_rain).toFixed(2);
+        }
+    }
+}
+
+function get_wind_from_data(prov){
+    for(row of wind_data)
+    {   
+        if(row.provincia == prov && row.ora==ora.value)
+        {
+            return [parseFloat(row.wind_speed_max).toFixed(2),parseFloat(row.wind_deg_max).toFixed(2)];
+        }
+    }
+}
 function remove_pressure(){
     g_pressioni.selectAll("circle").remove();
     g_pressioni.selectAll("rect").remove();
@@ -126,8 +139,12 @@ function remove_wind_deg() {
     g_wind.selectAll("line").remove();
 }
 
+function remove_rain_bar(){
+    g_rain.selectAll(".r").remove();
+}
+
 function remove_color(){
-    svg.selectAll("path").style("fill","#ccc")
+    g_italy.selectAll("path").style("fill","#ccc")
     flag_colore = null;
 }
 
@@ -139,6 +156,32 @@ function remove_legend(){
 function remove_over(){
     remove_wind_deg();
     remove_pressure();
-    flag_over = null;
+    remove_rain_bar();
 }
 
+function handle_remove_over(){
+    flag_over = null;
+    remove_over();
+}
+
+function load_file(){
+    temp_file = "DATA/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    d3.json(temp_file).then(function(meteo) {
+        temp_data = meteo 
+    });
+
+    wind_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    d3.json(wind_file).then(function(meteo) {
+        wind_data = meteo
+    });
+
+    rain_file = "DATA/rain_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    d3.json(rain_file).then(function(meteo) {
+        rain_data = meteo
+    });
+
+    pre_umid_file = "DATA/pre_umid_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    return  d3.json(pre_umid_file).then(function(pre_umid) {
+            pre_umid_data = pre_umid  
+            });
+}

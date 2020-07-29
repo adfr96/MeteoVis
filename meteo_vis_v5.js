@@ -47,6 +47,7 @@ const zoom = d3.zoom()
 svg.call(zoom);
 var path = null
 
+var g_italy = null;
 var g_pressioni = null;
 var g_wind =null;
 var g_rain = null;
@@ -64,6 +65,9 @@ function zoomed() {
       .attr("transform", d3.event.transform);
     svg.select(".wind") // To prevent stroke width from scaling
       .attr("transform", d3.event.transform);
+    svg.select(".rain")
+        .selectAll(".r") // To prevent stroke width from scaling
+        .attr("transform", d3.event.transform);
   }
 
 function getCentroid(data,path){
@@ -82,6 +86,8 @@ function fill_centroid_map(){
 
 async function init(){
     await draw_map();
+    await load_file();
+    
     fill_centroid_map(); 
     svg_legende = d3.select("#legende").append("svg")
         .attr("width", width_legend)
@@ -96,10 +102,7 @@ async function init(){
 
     g_wind = svg.append("g").attr("class","wind");
 
-    //draw_wind();
-
     g_rain = svg.append("g").attr("class","rain")
-    
-    //draw_rain()
+
 }
 init();

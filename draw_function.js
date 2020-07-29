@@ -15,17 +15,18 @@ function draw_map(){
         var municipalities = topojson.feature(topology,topology.objects.municipalities)
         var regions = topojson.feature(topology,topology.objects.regions)
 
-        svg.append("g")
-        .attr("class","italy")
-        .selectAll("path")
-        .data(provinces.features)
-        .enter()
-        .append("path")
-        .attr("d",path)
-        .attr("class",function(d){return d.properties.prov_acr})
-        .on("mouseover",handleMouseOverProvinces)
-        .on("mouseout",handleMouseOutProvinces)
-        .on("click",handleMouseClickProvinces);
+        g_italy = svg.append("g")
+            .attr("class","italy");
+
+        g_italy.selectAll("path")
+            .data(provinces.features)
+            .enter()
+            .append("path")
+            .attr("d",path)
+            .attr("class",function(d){return d.properties.prov_acr})
+            .on("mouseover",handleMouseOverProvinces)
+            .on("mouseout",handleMouseOutProvinces)
+            .on("click",handleMouseClickProvinces);
 
         });
 }
@@ -161,9 +162,9 @@ function draw_circle(prov){
         .attr("cx",centroid_map[prov][0])
         .attr("cy",centroid_map[prov][1])
         .attr("r",3)
-        .attr("stroke","gray")
+        .attr("stroke","black")
         .attr("stroke-width",1.5)
-        .style("fill","gray");
+        .style("fill","black");
     }
     else{console.log(prov)}
 }
@@ -176,9 +177,9 @@ function draw_square(prov){
             .attr("y", centroid_map[prov][1])
             .attr("width", 5)
             .attr("height", 5)
-            .attr("stroke","gray")
+            .attr("stroke","black")
             .attr("stroke-width",1.5)
-            .style("fill","gray");
+            .style("fill","black");
     }
     else{
         console.log(prov)
@@ -237,7 +238,7 @@ function draw_rain(){
 }
 
 function update_rain(rain_data) {
-    remove_pressure();
+
     for(row of rain_data)
     {   
         if(row.provincia != "nan" && row.ora==ora.value)
@@ -248,22 +249,22 @@ function update_rain(rain_data) {
 }
 
 function draw_rect(prov,mm_rain) {
-    console.log(mm_rain)
+    //console.log(mm_rain)
     if(centroid_map[prov] != undefined)
     {
         var h = scaleLinearRain(mm_rain)
-        g_pressioni.append("rect")
-            .attr("class","p")
+        g_rain.append("rect")
+            .attr("class","r")
             .attr("x", centroid_map[prov][0])
             .attr("y", centroid_map[prov][1]-h/2)
             .attr("width", 5)
             .attr("height", h)
-            .attr("stroke","gray")
+            .attr("stroke","black")
             .attr("stroke-width",1)
             .style("fill","black");
     }
     else{
-        console.log(prov)
+        console.log("province not found:"+prov)
     }
 }
 
