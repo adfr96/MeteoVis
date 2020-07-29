@@ -25,7 +25,7 @@ var temp_legend = {
 }
 
 var pressure_legend = {
-    color: d3.scaleSqrt([900,993, 1013,1023,1100], ["DarkBlue","blue", "white", "red","DarkRed"]),
+    color: d3.scaleSqrt([900,993, 1013,1023,1100], ["RoyalBlue","DeepSkyBlue", "white", "red","DarkRed"]),
     title: "Pressure"
 }
 var rain_legend = {
@@ -106,7 +106,7 @@ async function init(){
     g_rain = svg.append("g").attr("class","rain")
 
     g_humidity_pie = svg.append("g").attr("class","humidity")
-    
+
     draw_pressure_legend();
 
 }
