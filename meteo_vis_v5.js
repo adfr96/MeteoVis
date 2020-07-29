@@ -11,6 +11,11 @@ var pre_umid_data = null
 var rain_file = null
 var rain_data = null
 
+var wind_file = null
+var wind_data = null
+
+var g_wind =null;
+
 var centroid_map = {}
 
 var temp_legend = {
@@ -124,6 +129,73 @@ function temp_to_color(temp){
     return temp_legend.color(temp)
 >>>>>>> a8ca6abeb144b375d81c7382c0a51739f0d8c7d7
 }
+function wind_to_color(wind_speed) {
+    color = d3.scaleSqrt().domain([0,0.3 ,1.6, 3.5, 5.5, 8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7]).range(["AliceBlue","Acqua","DeepSkyBlue","RoyalBlue","Chartreuse",,"ForestGreen","DarkGreen",,"DarkOliverGreen","Red","DarkRed","Fucsia","Purple","Black"])
+    //color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
+    return color(wind_speed)   
+}
+function draw_wind() {
+    new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    console.log(wind_file)
+    if (new_file == wind_file) {
+        update_wind(wind_data);
+    }
+    else {
+        wind_file = new_file
+        d3.json(wind_file).then(function(meteo) {
+            wind_data = meteo
+            update_wind(wind_data);
+        });
+    }
+}
+
+function update_wind(wind_data) {
+    remove_wind();
+    for(row of wind_data) {
+        if(row.provincia != "nan" && row.ora == ora.value) {
+            
+            p = svg.select("."+row.provincia)
+                .attr("wind_speed",row.wind_speed_max)
+                .style("fill",wind_to_color(row.wind_speed_max));
+            draw_arrow(row.provincia,row.wind_deg_max);
+        }
+    }
+}
+
+function draw_arrow(prov,wind_deg) {
+    if(centroid_map[prov] != undefined)
+    {
+        var x1 = centroid_map[prov][0]
+        var y1 = centroid_map[prov][1]
+        var x2 = centroid_map[prov][0]+Math.cos(wind_deg)*8
+        var y2 = centroid_map[prov][1]+Math.sin(wind_deg)*8
+        //console.log("ok "+prov)
+            g_wind.append("line")
+            .attr("x1", x1)
+            .attr("y1", y1)
+            .attr("x2", x2)
+            .attr("y2", y2)
+            .attr("stroke-width",2)
+            .attr("stroke","black")
+            .attr("marker-end","url(#arrow)");
+            g_wind.append("svg:defs").append("svg:marker")
+                .attr("id", "arrow")
+                .attr("refX", 0)
+                .attr("refY", 3)
+                .attr("markerWidth", 8)
+                .attr("markerHeight", 6)
+                .attr("markerUnits", "userSpaceOnUse")
+                .attr("orient", "auto")
+                .append("path")
+                //.attr("d", "M 0 0 L 4 8 L 8 0")
+                .attr("d","M 0 0 L 8 3 L 0 6")
+                .style("fill", "black");
+    }
+    else{
+        console.log(prov)
+    }   
+}
+
 function handleMouseOverProvinces(d,i){
     value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
     id_prov = (this.getAttribute("class"))
@@ -213,6 +285,10 @@ function update_pressure(){
 function remove_pressure(){
     g_pressioni.selectAll("circle").remove();
     g_pressioni.selectAll("rect").remove();
+}
+
+function remove_wind() {
+    g_wind.selectAll("line").remove();
 }
 
 function remove_color(){
@@ -386,6 +462,7 @@ async function init(){
     
     draw_pressure();
     
+    g_wind = svg.append("g").attr("class","wind");
     
 }
 init();
