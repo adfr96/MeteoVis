@@ -54,6 +54,7 @@ var g_italy = null;
 var g_pressioni = null;
 var g_wind =null;
 var g_rain = null;
+var g_humidity_pie = null;
 
 var width_legend = 450;
 var height_legend = 100;
@@ -104,6 +105,8 @@ async function init(){
 
     g_rain = svg.append("g").attr("class","rain")
 
+    g_humidity_pie = svg.append("g").attr("class","humidity")
+    
     draw_pressure_legend();
 
 }

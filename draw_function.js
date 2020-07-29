@@ -445,3 +445,52 @@ function update_pressure_color(){
     }
 }
 
+function draw_humidity_pie(){
+    new_file = "DATA/pre_umid_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    if(new_file == pre_umid_file)
+    {
+        update_humidity_pie(pre_umid_data);
+    }
+    else
+    {
+        //console.log("update_file",new_file)
+        pre_umid_file = new_file
+        d3.json(pre_umid_file).then(function(pre_umid) {
+            pre_umid_data = pre_umid
+            update_humidity_pie(pre_umid_data);        
+        });
+    }
+}
+
+function update_humidity_pie(){
+    for(row of pre_umid_data)
+    {   
+        c = centroid_map[row.provincia]
+        if(row.provincia != "nan" && row.ora==ora.value && c!=undefined)
+        {
+            radius = 6
+            c = centroid_map[row.provincia]
+            
+            data = [row.umidita_media, 100 - row.umidita_media]
+            g_p = g_humidity_pie.append("g")
+                        .attr("class","h")
+                        .attr("transform","translate("+c[0]+","+c[1]+")");
+
+            var color = d3.scaleOrdinal(['black','none'])
+            var pie = d3.pie();
+
+            var arc = d3.arc().innerRadius(0).outerRadius(radius);
+            
+            var arcs = g_p.selectAll("arc")
+                        .data(pie(data))
+                        .enter()
+                        .append("g")
+                        .attr("class","arc")
+            arcs.append("path")
+                .style("fill",function (d,i){
+                    return color(i);
+                })
+                .attr("d",arc)
+        }
+    }
+}

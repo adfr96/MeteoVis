@@ -51,10 +51,8 @@ function update_over_map(show){
 
 function update_over(){
     remove_over();
-    console.log(flag_over)
     if(flag_over == "pressure")
     {
-        console.log("draw pressure")
         draw_pressure();
     }
     if(flag_over == "rain")
@@ -64,6 +62,10 @@ function update_over(){
     if(flag_over == "wind")
     {
         draw_wind_deg();
+    } 
+    if(flag_over == "humidity")
+    {
+        draw_humidity_pie();
     } 
 }
 
@@ -150,6 +152,10 @@ function remove_rain_bar(){
     g_rain.selectAll(".r").remove();
 }
 
+function remove_humidity_pie(){
+    g_humidity_pie.selectAll(".h").remove();
+}
+
 function remove_color(){
     g_italy.selectAll("path").style("fill","#ccc")
     flag_colore = null;
@@ -164,6 +170,7 @@ function remove_over(){
     remove_wind_deg();
     remove_pressure();
     remove_rain_bar();
+    remove_humidity_pie();
 }
 
 function handle_remove_over(){
