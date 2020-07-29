@@ -88,7 +88,9 @@ function update_temperature(meteo_data){
 }
 
 function temp_to_color(temp){
-    //color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
+    //
+
+    color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
     color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
     return color(temp)
 }
