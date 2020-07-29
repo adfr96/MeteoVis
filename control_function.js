@@ -166,22 +166,23 @@ function handle_remove_over(){
 
 function load_file(){
     temp_file = "DATA/temp_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    d3.json(temp_file).then(function(meteo) {
+    t = d3.json(temp_file).then(function(meteo) {
         temp_data = meteo 
     });
 
     wind_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    d3.json(wind_file).then(function(meteo) {
+     d3.json(wind_file).then(function(meteo) {
         wind_data = meteo
     });
 
     rain_file = "DATA/rain_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    d3.json(rain_file).then(function(meteo) {
+     d3.json(rain_file).then(function(meteo) {
         rain_data = meteo
     });
 
     pre_umid_file = "DATA/pre_umid_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    return  d3.json(pre_umid_file).then(function(pre_umid) {
+     d3.json(pre_umid_file).then(function(pre_umid) {
             pre_umid_data = pre_umid  
-            });
+    });
+    return t
 }

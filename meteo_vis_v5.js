@@ -57,16 +57,13 @@ var height_legend = 100;
 var svg_legende = null;
 
 function zoomed() {
-    svg.select(".italy")
-      .selectAll('path') // To prevent stroke width from scaling
+    svg.select(".italy")// To prevent stroke width from scaling
       .attr('transform', d3.event.transform);
-    svg.select(".pressioni")
-      .selectAll(".p") // To prevent stroke width from scaling
+    svg.select(".pressioni") // To prevent stroke width from scaling
       .attr("transform", d3.event.transform);
     svg.select(".wind") // To prevent stroke width from scaling
       .attr("transform", d3.event.transform);
-    svg.select(".rain")
-        .selectAll(".r") // To prevent stroke width from scaling
+    svg.select(".rain") // To prevent stroke width from scaling
         .attr("transform", d3.event.transform);
   }
 
@@ -86,7 +83,7 @@ function fill_centroid_map(){
 
 async function init(){
     await draw_map();
-    await load_file();
+    t_promis = load_file();
     
     fill_centroid_map(); 
     svg_legende = d3.select("#legende").append("svg")
@@ -95,7 +92,7 @@ async function init(){
         .attr("viewBox", [0, 0, width_legend, height_legend])
         .style("overflow", "visible")
         .style("display", "block");   
-    
+    await t_promis;
     draw_temp();
     
     g_pressioni = svg.append("g").attr("class","pressioni");

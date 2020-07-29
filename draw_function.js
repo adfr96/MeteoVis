@@ -329,9 +329,7 @@ function rain_to_color(sum_rain){
 }
 
 function draw_rain_color_legend(){
-
     remove_legend();
-    console.log("qui")
     svg_legende.append("image")
         .attr("class","legend")
         .attr("x", 0)
