@@ -126,7 +126,7 @@ function get_wind_from_data(prov){
     {   
         if(row.provincia == prov && row.ora==ora.value)
         {
-            return [parseFloat(row.wind_speed_max).toFixed(2),parseFloat(row.wind_deg_max).toFixed(2)];
+            return [parseFloat(row.wind_speed_max).toFixed(1),parseFloat(row.wind_deg_max).toFixed(1)];
         }
     }
 }

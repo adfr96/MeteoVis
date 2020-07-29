@@ -30,10 +30,9 @@ var rain_legend = {
 }
 
 var wind_intensity_legend = {
-    color: d3.scaleSqrt().domain([0,0.3 ,1.6, 3.5, 5.5, 8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7]).range(["#f0f8ff","Acqua","DeepSkyBlue","RoyalBlue","Chartreuse",,"ForestGreen","DarkGreen",,"DarkOliverGreen","Red","DarkRed","Fucsia","Purple","Black"]),
+    color: d3.scaleThreshold([0.3, 1.5, 3.4, 5.4, 7.9, 10.7, 13.8, 17.1,20.7,24.4,28.4, 32.6, 75], ["aliceblue","aqua","DeepSkyBlue","RoyalBlue","Chartreuse","ForestGreen","DarkGreen","DarkOliveGreen","Red","DarkRed","Fuchsia","Purple","Black"]),
     title: "Wind intensity"
 }
-
 var width = 800,height = 1000;
 
 var svg = d3.select("#svg").append("svg")
@@ -52,7 +51,7 @@ var g_pressioni = null;
 var g_wind =null;
 var g_rain = null;
 
-var width_legend = 350;
+var width_legend = 450;
 var height_legend = 100;
 var svg_legende = null;
 
@@ -86,7 +85,7 @@ async function init(){
     t_promis = load_file();
     
     fill_centroid_map(); 
-    svg_legende = d3.select("#legende").append("svg")
+    svg_legende = d3.select("#legenda_colore").append("svg")
         .attr("width", width_legend)
         .attr("height", height_legend)
         .attr("viewBox", [0, 0, width_legend, height_legend])
@@ -100,6 +99,8 @@ async function init(){
     g_wind = svg.append("g").attr("class","wind");
 
     g_rain = svg.append("g").attr("class","rain")
+
+    draw_pressure_legend();
 
 }
 init();

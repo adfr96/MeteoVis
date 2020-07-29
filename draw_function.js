@@ -67,7 +67,9 @@ function temp_to_color(temp){
     return temp_legend.color(temp)
 }
 function wind_to_color(wind_speed) {
-    return wind_intensity_legend.color(wind_speed)   
+    w_f = parseFloat(wind_speed);
+    //console.log(w_f)
+    return wind_intensity_legend.color(w_f)   
 }
 function draw_wind_intensity() {
     new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
@@ -82,10 +84,12 @@ function draw_wind_intensity() {
             update_wind_intensity(wind_data);
         });
     }
+    draw_wind_color_legend();
 }
 
 function update_wind_intensity(wind_data) {
     flag_colore = "wind"
+    //console.log(wind_intensity_legend)
     for(row of wind_data) {
         if(row.provincia != "nan" && row.ora == ora.value) {
             
@@ -99,6 +103,10 @@ function update_wind_intensity(wind_data) {
 function update_wind_deg(wind_data) {
     for(row of wind_data) {
         if(row.provincia != "nan" && row.ora == ora.value) {
+            if(row.provincia == "CA")
+            {
+                console.log(row)
+            }
             draw_arrow(row.provincia,row.wind_deg_max);
         }
     }
@@ -107,7 +115,6 @@ function update_wind_deg(wind_data) {
 function draw_wind_deg() {
 
     new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
-    console.log(wind_file)
     if (new_file == wind_file) {
         update_wind_deg(wind_data);
     }
@@ -281,7 +288,7 @@ function valMax(data,val) {
 
 function scaleLinearRain(mm_rain){
     var max = valMax(rain_data,"sum_rain")
-    console.log("max: ",max)
+    //console.log("max: ",max)
     var myscale = d3.scaleLinear().domain([0,max]).range([0,15])
     //console.log("mm_rain: "+mm_rain)
     //console.log("mm_rain scala: "+myscale(mm_rain))
@@ -354,3 +361,51 @@ function draw_temp_legend(){
         .attr("xlink:href", "temp_legend.png");   
 }
 
+function draw_wind_color_legend(){
+    remove_legend();
+    svg_legende.append("image")
+        .attr("class","legend")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width_legend)
+        .attr("height", height_legend)
+        .attr("preserveAspectRatio", "none")
+        .attr("xlink:href", "wind_legend.png");
+}
+
+function draw_pressure_legend(){
+    svg_p_legend = d3.select("#legenda_pressione").append("svg")
+        .attr("width", 200)
+        .attr("height", 100)
+        .attr("viewBox", [0, 0, 100, 50])
+        .style("overflow", "visible")
+        .style("display", "block");  
+    
+    svg_p_legend.append("circle")
+    .attr("cx",10)
+    .attr("cy",10)
+    .attr("r",8)
+    .attr("stroke","black")
+    .attr("stroke-width",1.5)
+    .style("fill","black");
+
+    svg_p_legend.append("text")
+            .attr("transform", "translate(25,15)")
+            .text("High Pressure (>1014 hPa)")
+            .style("font","italic 10px sans-serif");
+
+    svg_p_legend.append("rect")
+            .attr("class","p")
+            .attr("x", 2)
+            .attr("y", 25)
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("stroke","black")
+            .attr("stroke-width",1.5)
+            .style("fill","black");
+    
+    svg_p_legend.append("text")
+            .attr("transform", "translate(25,40)")
+            .text("Low Pressure (<1011 hPa)")
+            .style("font","italic 10px sans-serif");
+}
