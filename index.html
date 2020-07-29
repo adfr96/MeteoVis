@@ -60,24 +60,28 @@ path:hover {
 	
 	<table >
 		<tr>
-			<br><h5>What show with color?</h5><br>
+			<br><text>What show with color?</text><br>
 			<form>
-				<input type="radio" id="tempOn" name="t_form" value= "on" onclick="show_temp(true)" checked>
+				<input type="radio" id="tempOn" name="color" value= "on" onclick="update_color_map('temp')" checked>
 				<label for="tempOn"> Temperature</label>
-				<input type="radio" id="rain_color_on" name="t_form" value="off" onclick="show_rain_color(true)">
+				<input type="radio" id="rain_color_on" name="color" value="off" onclick="update_color_map('rain')">
 				<label for="rain_color_on"> Rain</label>
-				<input type="radio" id="color_off" name="t_form" value="off" onclick="remove_color()">
-				<label for="rain_color_on"> Nothing</label>
+				<input type="radio" id="wind_intensity_on" name="color" value="off" onclick="update_color_map('wind')">
+				<label for="wind_intensity_on"> Wind</label>
+				<input type="radio" id="color_off" name="color" value="off" onclick="remove_color()">
+				<label for="color_off"> Nothing</label>
 				<span class="switch"></span>
 			</form>
 		</tr>
 		<tr>
-			<br>Selettore pressione <br>
+			<br>What show over the map? <br>
 			<form>
-				<input type="radio" id="pressureOn" name="p_form" value= "on" onclick="show_pressure(true)" checked >
-				<label for="pressureOn"> Show Pressure</label><br>
-				<input type="radio" id="pressureOff" name="p_form" value="off" onclick="show_pressure(false)" >
-				<label for="pressureOFF"> Hide Pressure</label
+				<input type="radio" id="pressureOn" name="over" value= "on" onclick="update_over_map('pressure')" >
+				<label for="pressureOn"> Pressure</label>
+				<input type="radio" id="windOn" name="over" value="off" onclick="update_over_map('wind')" >
+				<label for="windOn"> Wind degree</label>
+				<input type="radio" id="over_off" name="over" value="off" onclick="remove_over()" checked>
+				<label for="over_off"> Nothing</label>
 				<span class="switch"></span>
 			</form>
 		</tr>
