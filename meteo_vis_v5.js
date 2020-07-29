@@ -119,15 +119,7 @@ function update_temperature(temp_data){
 }
 
 function temp_to_color(temp){
-<<<<<<< HEAD
-    //
-
-    color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
-    color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
-    return color(temp)
-=======
     return temp_legend.color(temp)
->>>>>>> a8ca6abeb144b375d81c7382c0a51739f0d8c7d7
 }
 function wind_to_color(wind_speed) {
     color = d3.scaleSqrt().domain([0,0.3 ,1.6, 3.5, 5.5, 8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7]).range(["AliceBlue","Acqua","DeepSkyBlue","RoyalBlue","Chartreuse",,"ForestGreen","DarkGreen",,"DarkOliverGreen","Red","DarkRed","Fucsia","Purple","Black"])
