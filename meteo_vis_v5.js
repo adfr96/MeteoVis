@@ -114,15 +114,7 @@ function update_temperature(temp_data){
 }
 
 function temp_to_color(temp){
-<<<<<<< HEAD
-    //
-
-    color = d3.scaleSqrt().domain([-30, -15 ,0, 15, 30, 45]).range(["navy","blu","acqua", "greenyellow", "orange","purple"])
-    color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
-    return color(temp)
-=======
     return temp_legend.color(temp)
->>>>>>> a8ca6abeb144b375d81c7382c0a51739f0d8c7d7
 }
 function handleMouseOverProvinces(d,i){
     value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
