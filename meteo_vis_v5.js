@@ -14,9 +14,10 @@ var rain_data = null
 var wind_file = null
 var wind_data = null
 
-var g_wind =null;
-
 var centroid_map = {}
+
+var flag_colore = "temp";
+var flag_over = null;
 
 var temp_legend = {
     color: d3.scaleSequential([-20, 45], d3.interpolateTurbo),
@@ -26,7 +27,12 @@ var temp_legend = {
 var rain_legend = {
     color: d3.scaleSequentialSqrt([0, 30], d3.interpolateBlues),
     title: "Sum of rain"
-  }
+}
+
+var wind_intensity_legend = {
+    color: d3.scaleSqrt().domain([0,0.3 ,1.6, 3.5, 5.5, 8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7]).range(["AliceBlue","Acqua","DeepSkyBlue","RoyalBlue","Chartreuse",,"ForestGreen","DarkGreen",,"DarkOliverGreen","Red","DarkRed","Fucsia","Purple","Black"]),
+    title: "Wind intensity"
+}
 
 var width = 800,height = 1000;
 
@@ -41,6 +47,7 @@ const zoom = d3.zoom()
 svg.call(zoom);
 var path = null
 var g_pressioni = null;
+var g_wind =null;
 
 var width_legend = 350;
 var height_legend = 100;
@@ -52,6 +59,8 @@ function zoomed() {
       .attr('transform', d3.event.transform);
     svg.select(".pressioni")
       .selectAll(".p") // To prevent stroke width from scaling
+      .attr("transform", d3.event.transform);
+    svg.select(".wind") // To prevent stroke width from scaling
       .attr("transform", d3.event.transform);
   }
 function draw_map(){
@@ -122,38 +131,58 @@ function temp_to_color(temp){
     return temp_legend.color(temp)
 }
 function wind_to_color(wind_speed) {
-    color = d3.scaleSqrt().domain([0,0.3 ,1.6, 3.5, 5.5, 8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7]).range(["AliceBlue","Acqua","DeepSkyBlue","RoyalBlue","Chartreuse",,"ForestGreen","DarkGreen",,"DarkOliverGreen","Red","DarkRed","Fucsia","Purple","Black"])
-    //color = d3.scaleSequential([-20, 45], d3.interpolateTurbo);
-    return color(wind_speed)   
+    return wind_intensity_legend.color(wind_speed)   
 }
-function draw_wind() {
+function draw_wind_intensity() {
     new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
     console.log(wind_file)
     if (new_file == wind_file) {
-        update_wind(wind_data);
+        update_wind_intensity(wind_data);
     }
     else {
         wind_file = new_file
         d3.json(wind_file).then(function(meteo) {
             wind_data = meteo
-            update_wind(wind_data);
+            update_wind_intensity(wind_data);
         });
     }
 }
 
-function update_wind(wind_data) {
-    remove_wind();
+function update_wind_intensity(wind_data) {
+    flag_colore = "wind"
     for(row of wind_data) {
         if(row.provincia != "nan" && row.ora == ora.value) {
             
             p = svg.select("."+row.provincia)
                 .attr("wind_speed",row.wind_speed_max)
                 .style("fill",wind_to_color(row.wind_speed_max));
+        }
+    }
+}
+
+function update_wind_deg(wind_data) {
+    for(row of wind_data) {
+        if(row.provincia != "nan" && row.ora == ora.value) {
             draw_arrow(row.provincia,row.wind_deg_max);
         }
     }
 }
 
+function draw_wind_deg() {
+
+    new_file = "DATA/wind_provincie_"+anno.value+"-"+mese.value+"-"+giorno.value+".json"
+    console.log(wind_file)
+    if (new_file == wind_file) {
+        update_wind_deg(wind_data);
+    }
+    else {
+        wind_file = new_file
+        d3.json(wind_file).then(function(meteo) {
+            wind_data = meteo
+            update_wind_deg(wind_data);
+        });
+    }
+}
 function draw_arrow(prov,wind_deg) {
     if(centroid_map[prov] != undefined)
     {
@@ -163,6 +192,7 @@ function draw_arrow(prov,wind_deg) {
         var y2 = centroid_map[prov][1]+Math.sin(wind_deg)*8
         //console.log("ok "+prov)
             g_wind.append("line")
+            .attr("calss","w")
             .attr("x1", x1)
             .attr("y1", y1)
             .attr("x2", x2)
@@ -256,7 +286,6 @@ function draw_pressure(){
 }
 
 function update_pressure(){
-    remove_pressure();
     for(row of pre_umid_data)
     {   
         if(row.provincia != "nan" && row.ora==ora.value)
@@ -279,12 +308,13 @@ function remove_pressure(){
     g_pressioni.selectAll("rect").remove();
 }
 
-function remove_wind() {
+function remove_wind_deg() {
     g_wind.selectAll("line").remove();
 }
 
 function remove_color(){
     svg.selectAll("path").style("fill","#ccc")
+    flag_colore = null;
 }
 
 function show_pressure(show){
@@ -298,31 +328,76 @@ function show_pressure(show){
     }
 }
 
-function show_temp(show){
-    if(show)
+function update_color_map(show){
+    if(show == "temp")
+    {
+        flag_colore = "temp";
+    }
+    if(show == "rain")
+    {
+        flag_colore = "rain";
+    }
+    if(show == "wind")
+    {
+        flag_colore = "wind";
+    }
+    update_color()
+}
+
+
+function update_color(){
+    if(flag_colore == "temp")
     {
         draw_temp();
     }
-    else
+    if(flag_colore == "rain")
     {
-        remove_color();
+        draw_rain_color();
     }
+    if(flag_colore == "wind")
+    {
+        draw_wind_intensity();
+    } 
 }
 
-function fill_centroid_map(){
-    for(row of provinces.features){
-        centroid_map[row.properties.prov_acr] = getCentroid(row,path)
-        if(row.properties.prov_acr == "VC")
-        {
-            centroid_map[row.properties.prov_acr][1] += 12
-        }
+function update_over_map(show){
+    if(show == "pressure")
+    {
+        flag_over = "pressure";
     }
+    if(show == "rain")
+    {
+        flag_over = "rain";
+    }
+    if(show == "wind")
+    {
+        flag_over = "wind";
+    }
+    update_over();
+}
+
+
+function update_over(){
+    remove_over();
+    if(flag_over == "pressure")
+    {
+        draw_pressure();
+    }
+    if(flag_over == "rain")
+    {
+        //a breve
+    }
+    if(flag_over == "wind")
+    {
+        draw_wind_deg();
+    } 
 }
 
 function update_all(){
-    draw_temp();
-    draw_pressure();
+    update_color();
+    update_over();
 }
+
 function remove_legend(){
     svg_legende.select(".legend").remove();
 }
@@ -359,7 +434,7 @@ function get_temp_from_data(prov){
     {   
         if(row.provincia == prov && row.ora==ora.value)
         {
-            return row.media_temp
+            return parseFloat(row.media_temp).toFixed(2);
         }
     }
 }
@@ -369,7 +444,7 @@ function get_pressure_from_data(prov){
     {   
         if(row.provincia == prov && row.ora==ora.value)
         {
-            return row.pressione_media
+            return parseFloat(row.pressione_media).toFixed(2);
         }
     }
 }
@@ -397,6 +472,7 @@ function draw_rain_color(){
 }
 
 function update_rain_color(rain_data){
+    flag_colore = "rain"
     for(row of rain_data)
     {   
         if(row.provincia != "" && row.ora==ora.value)
@@ -413,15 +489,20 @@ function rain_to_color(sum_rain){
     return rain_legend.color(sum_rain);
 }
 
-function show_rain_color(show){
+function show_wind_deg(show){
     if(show)
     {
-        draw_rain_color()
+        draw_wind_deg();
     }
     else
     {
-        remove_color();
+        remove_wind_deg();
     }
+}
+
+function remove_over(){
+    remove_wind_deg();
+    remove_pressure();
 }
 
 function draw_rain_color_legend(){
@@ -439,6 +520,16 @@ function draw_rain_color_legend(){
     
     
 }
+function fill_centroid_map(){
+    for(row of provinces.features){
+        centroid_map[row.properties.prov_acr] = getCentroid(row,path)
+        if(row.properties.prov_acr == "VC")
+        {
+            centroid_map[row.properties.prov_acr][1] += 12
+        }
+    }
+}
+
 async function init(){
     await draw_map();
     fill_centroid_map(); 
@@ -450,10 +541,7 @@ async function init(){
         .style("display", "block");   
     
     draw_temp();
-    g_pressioni = svg.append("g").attr("class","pressioni");
-    
-    draw_pressure();
-    
+    g_pressioni = svg.append("g").attr("class","pressioni");    
     g_wind = svg.append("g").attr("class","wind");
     
 }
