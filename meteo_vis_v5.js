@@ -18,6 +18,7 @@ var centroid_map = {}
 
 var flag_colore = "temp";
 var flag_over = null;
+var prov_selected = null;
 
 var temp_legend = {
     color: d3.scaleSequential([-20, 45], d3.interpolateTurbo),

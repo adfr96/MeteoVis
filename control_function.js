@@ -13,12 +13,10 @@ function handleMouseOutProvinces(d,i){
     svg.select(".value").remove();
 }
 
-
 function update_color_map(show){
     flag_colore = show;
     update_color()
 }
-
 
 function update_color(){
     if(flag_colore == "temp")
@@ -48,7 +46,6 @@ function update_over_map(show){
     update_over();
 }
 
-
 function update_over(){
     remove_over();
     if(flag_over == "pressure")
@@ -72,24 +69,30 @@ function update_over(){
 function update_all(){
     update_color();
     update_over();
+    update_info_area();
 
 }
 
 function handleMouseClickProvinces(d,i){
     id_prov = (this.getAttribute("class"))
+    prov_selected = id_prov
+    update_info_area();
+}
+
+function update_info_area(){
 
     d3.select("#info_area").selectAll("li").remove();
 
     d3.select("#info_area").append("li")
-        .text("Province:"+id_prov);
+    .text("Province:"+prov_selected);
 
     d3.select("#info_area").append("li")
-    .text("Temperatura media:"+get_temp_from_data(id_prov)+" °C");
+    .text("Temperatura media:"+get_temp_from_data(prov_selected)+" °C");
 
     d3.select("#info_area").append("li")
-    .text("Pressione media:"+get_pressure_humidity_from_data(id_prov)[0]+" hPa");
+    .text("Pressione media:"+get_pressure_humidity_from_data(prov_selected)[0]+" hPa");
 
-    w = get_wind_from_data(id_prov)
+    w = get_wind_from_data(prov_selected)
     d3.select("#info_area").append("li")
     .text("Vento Massimo:"+w[0]+" m/s");
 
@@ -97,10 +100,10 @@ function handleMouseClickProvinces(d,i){
     .text("Angolo Vento Massimo:"+w[1]+"°");
 
     d3.select("#info_area").append("li")
-    .text("Somma Pioggia:"+get_rain_from_data(id_prov)+" mm");
+    .text("Somma Pioggia:"+get_rain_from_data(prov_selected)+" mm");
 
     d3.select("#info_area").append("li")
-    .text("Umidità media:"+get_pressure_humidity_from_data(id_prov)[1]+" %");
+    .text("Umidità media:"+get_pressure_humidity_from_data(prov_selected)[1]+" %");
 }
 
 function get_temp_from_data(prov){
@@ -167,7 +170,6 @@ function remove_color(){
 function remove_legend(){
     svg_legende.select(".legend").remove();
 }
-
 
 function remove_over(){
     remove_wind_deg();
