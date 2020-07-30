@@ -66,10 +66,14 @@ function update_over(){
     } 
 }
 
+
 function update_all(){
     update_color();
     update_over();
-    update_info_area();
+    if(prov_selected!=null) {
+        update_info_area();    
+    }
+    
 
 }
 
