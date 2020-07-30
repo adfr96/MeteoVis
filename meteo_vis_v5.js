@@ -34,6 +34,7 @@ var rain_legend = {
     color: d3.scaleSequentialSqrt([0, 30], d3.interpolateBlues),
     title: "Sum of rain"
 }
+/* funzione per disegnare le scale che al momento non si riesce a far funzionare
 function legend({
   color,
   title,
@@ -144,7 +145,8 @@ function legend({
 function entity(character) {
   return `&#${character.charCodeAt(0).toString()};`;
 }
-
+*/
+/* DOM.canvas da errore!!!
 function ramp(color, n = 256) {
   const canvas = DOM.canvas(n, 1);
   const context = canvas.getContext("2d");
@@ -154,7 +156,7 @@ function ramp(color, n = 256) {
   }
   return canvas;
 }
-
+*/
 svg.append("g")
       .attr("transform", `translate(0,${height - marginBottom})`)
       .call(d3.axisBottom(x)
