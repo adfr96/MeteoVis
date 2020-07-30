@@ -69,6 +69,8 @@ function zoomed() {
       .attr("transform", d3.event.transform);
     svg.select(".rain") // To prevent stroke width from scaling
         .attr("transform", d3.event.transform);
+    svg.select(".humidity") // To prevent stroke width from scaling
+        .attr("transform", d3.event.transform);
   }
 
 function getCentroid(data,path){

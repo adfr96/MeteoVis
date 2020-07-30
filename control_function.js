@@ -81,13 +81,13 @@ function handleMouseClickProvinces(d,i){
     d3.select("#info_area").selectAll("li").remove();
 
     d3.select("#info_area").append("li")
-        .text("province:"+id_prov);
+        .text("Province:"+id_prov);
 
     d3.select("#info_area").append("li")
-    .text("temperatura media:"+get_temp_from_data(id_prov)+" °C");
+    .text("Temperatura media:"+get_temp_from_data(id_prov)+" °C");
 
     d3.select("#info_area").append("li")
-    .text("pressione media:"+get_pressure_from_data(id_prov)+" hPa");
+    .text("Pressione media:"+get_pressure_humidity_from_data(id_prov)[0]+" hPa");
 
     w = get_wind_from_data(id_prov)
     d3.select("#info_area").append("li")
@@ -98,6 +98,9 @@ function handleMouseClickProvinces(d,i){
 
     d3.select("#info_area").append("li")
     .text("Somma Pioggia:"+get_rain_from_data(id_prov)+" mm");
+
+    d3.select("#info_area").append("li")
+    .text("Umidità media:"+get_pressure_humidity_from_data(id_prov)[1]+" %");
 }
 
 function get_temp_from_data(prov){
@@ -110,12 +113,12 @@ function get_temp_from_data(prov){
     }
 }
 
-function get_pressure_from_data(prov){
+function get_pressure_humidity_from_data(prov){
     for(row of pre_umid_data)
     {   
         if(row.provincia == prov && row.ora==ora.value)
         {
-            return parseFloat(row.pressione_media).toFixed(2);
+            return [parseFloat(row.pressione_media).toFixed(2),parseFloat(row.umidita_media)];
         }
     }
 }
