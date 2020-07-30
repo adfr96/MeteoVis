@@ -24,6 +24,10 @@ var temp_legend = {
     title: "Temperature"
 }
 
+var pressure_legend = {
+    color: d3.scaleSqrt([900,993, 1013,1023,1100], ["RoyalBlue","DeepSkyBlue", "white", "red","DarkRed"]),
+    title: "Pressure"
+}
 var rain_legend = {
     color: d3.scaleSequentialSqrt([0, 30], d3.interpolateBlues),
     title: "Sum of rain"
@@ -190,6 +194,7 @@ var g_italy = null;
 var g_pressioni = null;
 var g_wind =null;
 var g_rain = null;
+var g_humidity_pie = null;
 
 var width_legend = 450;
 var height_legend = 100;
@@ -239,6 +244,8 @@ async function init(){
     g_wind = svg.append("g").attr("class","wind");
 
     g_rain = svg.append("g").attr("class","rain")
+
+    g_humidity_pie = svg.append("g").attr("class","humidity")
 
     draw_pressure_legend();
 

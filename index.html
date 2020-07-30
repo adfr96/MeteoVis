@@ -70,6 +70,8 @@ path:hover {
 				<label for="rain_color_on"> Rain</label>
 				<input type="radio" id="wind_intensity_on" name="color" value="off" onclick="update_color_map('wind')">
 				<label for="wind_intensity_on"> Wind</label>
+				<input type="radio" id="pressure_color_on" name="color" value="off" onclick="update_color_map('pressure')">
+				<label for="pressure_color_on"> Pressure</label>
 				<input type="radio" id="color_off" name="color" value="off" onclick="remove_color()">
 				<label for="color_off"> Nothing</label>
 				<span class="switch"></span>
@@ -85,6 +87,8 @@ path:hover {
 				<label for="windOn"> Wind degree</label>
 				<input type="radio" id="rainOn" name="over" value="off" onclick="update_over_map('rain')" >
 				<label for="rainOn">Sum of Rain</label>
+				<input type="radio" id="humidityOn" name="over" value="off" onclick="update_over_map('humidity')" >
+				<label for="humidityOn">Humidity %</label>
 				<input type="radio" id="over_off" name="over" value="off" onclick="handle_remove_over()" checked>
 				<label for="over_off"> Nothing</label>
 				<span class="switch"></span>
