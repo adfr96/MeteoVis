@@ -15,9 +15,11 @@ var wind_file = null
 var wind_data = null
 
 var centroid_map = {}
+var provinces_map = {}
 
 var flag_colore = "temp";
 var flag_over = null;
+var prov_selected = null;
 
 var temp_legend = {
     color: d3.scaleSequential([-20, 45], d3.interpolateTurbo),
@@ -195,6 +197,7 @@ var g_pressioni = null;
 var g_wind =null;
 var g_rain = null;
 var g_humidity_pie = null;
+var g_over = null;
 
 var width_legend = 450;
 var height_legend = 100;
@@ -208,6 +211,10 @@ function zoomed() {
     svg.select(".wind") // To prevent stroke width from scaling
       .attr("transform", d3.event.transform);
     svg.select(".rain") // To prevent stroke width from scaling
+        .attr("transform", d3.event.transform);
+    svg.select(".humidity") // To prevent stroke width from scaling
+        .attr("transform", d3.event.transform);
+    svg.select(".over") // To prevent stroke width from scaling
         .attr("transform", d3.event.transform);
   }
 
@@ -243,9 +250,11 @@ async function init(){
 
     g_wind = svg.append("g").attr("class","wind");
 
-    g_rain = svg.append("g").attr("class","rain")
+    g_rain = svg.append("g").attr("class","rain");
 
-    g_humidity_pie = svg.append("g").attr("class","humidity")
+    g_humidity_pie = svg.append("g").attr("class","humidity");
+
+    g_over = svg.append("g").attr("class","over")
 
     draw_pressure_legend();
 

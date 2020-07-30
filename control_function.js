@@ -1,24 +1,22 @@
 function handleMouseOverProvinces(d,i){
     value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
     id_prov = (this.getAttribute("class"))
-    x = d3.mouse(this)[0]
-    y = d3.mouse(this)[1]
-    svg.append("text")
-        .attr("class","value")
+    x = centroid_map[id_prov][0]
+    y = centroid_map[id_prov][1]
+    g_over.append("text")
+        .attr("class","value_over")
         .attr("transform", "translate("+x+"," + y+ ")")
-        .text("province:"+id_prov)
+        .text(provinces_map[id_prov])
 }
 
 function handleMouseOutProvinces(d,i){
-    svg.select(".value").remove();
+    g_over.select(".value_over").remove();
 }
-
 
 function update_color_map(show){
     flag_colore = show;
     update_color()
 }
-
 
 function update_color(){
     if(flag_colore == "temp")
@@ -48,7 +46,6 @@ function update_over_map(show){
     update_over();
 }
 
-
 function update_over(){
     remove_over();
     if(flag_over == "pressure")
@@ -72,24 +69,30 @@ function update_over(){
 function update_all(){
     update_color();
     update_over();
+    update_info_area();
 
 }
 
 function handleMouseClickProvinces(d,i){
     id_prov = (this.getAttribute("class"))
+    prov_selected = id_prov
+    update_info_area();
+}
+
+function update_info_area(){
 
     d3.select("#info_area").selectAll("li").remove();
 
     d3.select("#info_area").append("li")
-        .text("province:"+id_prov);
+    .text("Province:"+provinces_map[prov_selected]);
 
     d3.select("#info_area").append("li")
-    .text("temperatura media:"+get_temp_from_data(id_prov)+" °C");
+    .text("Temperatura media:"+get_temp_from_data(prov_selected)+" °C");
 
     d3.select("#info_area").append("li")
-    .text("pressione media:"+get_pressure_from_data(id_prov)+" hPa");
+    .text("Pressione media:"+get_pressure_humidity_from_data(prov_selected)[0]+" hPa");
 
-    w = get_wind_from_data(id_prov)
+    w = get_wind_from_data(prov_selected)
     d3.select("#info_area").append("li")
     .text("Vento Massimo:"+w[0]+" m/s");
 
@@ -97,7 +100,10 @@ function handleMouseClickProvinces(d,i){
     .text("Angolo Vento Massimo:"+w[1]+"°");
 
     d3.select("#info_area").append("li")
-    .text("Somma Pioggia:"+get_rain_from_data(id_prov)+" mm");
+    .text("Somma Pioggia:"+get_rain_from_data(prov_selected)+" mm");
+
+    d3.select("#info_area").append("li")
+    .text("Umidità media:"+get_pressure_humidity_from_data(prov_selected)[1]+" %");
 }
 
 function get_temp_from_data(prov){
@@ -110,12 +116,12 @@ function get_temp_from_data(prov){
     }
 }
 
-function get_pressure_from_data(prov){
+function get_pressure_humidity_from_data(prov){
     for(row of pre_umid_data)
     {   
         if(row.provincia == prov && row.ora==ora.value)
         {
-            return parseFloat(row.pressione_media).toFixed(2);
+            return [parseFloat(row.pressione_media).toFixed(2),parseFloat(row.umidita_media)];
         }
     }
 }
@@ -165,7 +171,6 @@ function remove_legend(){
     svg_legende.select(".legend").remove();
 }
 
-
 function remove_over(){
     remove_wind_deg();
     remove_pressure();
@@ -198,5 +203,14 @@ function load_file(){
      d3.json(pre_umid_file).then(function(pre_umid) {
             pre_umid_data = pre_umid  
     });
+    
+    d3.csv("DATA/id_provincie_tagliato.csv").then(function(data) {
+        for(row of data)
+        {
+            
+            provinces_map[row['PROVINCIA']] = row['CITTA']
+        }
+        //console.log(provinces_map);
+      });
     return t
 }
