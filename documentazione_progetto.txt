@@ -15,3 +15,5 @@ In particolare:
 -Direzione venti: le frecce indicano la direzione in gradi del vento
 -Umidità: rappresentate da un piechart che indica la percentuale di umidità presente
 
+Osservazione: per quanto riguarda la rappresentazione della direzione del vento, alcune volte per la stessa provincia ci sono due rappresentazioni diverse, ma ciò è dovuto ad un'incongruenza nei file json dei dati, che presentano due valori diversi per la stessa provincia nella nella stessa ora per il vento, cosa che non dovrebbe accadere.
+
