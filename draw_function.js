@@ -249,7 +249,7 @@ function update_rain(rain_data) {
 
 function draw_rect(prov,mm_rain) {
     //console.log(mm_rain)
-    if(centroid_map[prov] != undefined)
+    if(centroid_map[prov] != undefined  && mm_rain != 0)
     {
         var h = scaleLinearRain(mm_rain)
         g_rain.append("rect")
