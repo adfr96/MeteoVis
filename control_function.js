@@ -1,16 +1,16 @@
 function handleMouseOverProvinces(d,i){
     value = parseFloat(this.getAttribute("media_temp")).toFixed(2)
     id_prov = (this.getAttribute("class"))
-    x = d3.mouse(this)[0]
-    y = d3.mouse(this)[1]
-    svg.append("text")
-        .attr("class","value")
+    x = centroid_map[id_prov][0]
+    y = centroid_map[id_prov][1]
+    g_over.append("text")
+        .attr("class","value_over")
         .attr("transform", "translate("+x+"," + y+ ")")
-        .text("province:"+id_prov)
+        .text(provinces_map[id_prov])
 }
 
 function handleMouseOutProvinces(d,i){
-    svg.select(".value").remove();
+    g_over.select(".value_over").remove();
 }
 
 function update_color_map(show){
@@ -84,7 +84,7 @@ function update_info_area(){
     d3.select("#info_area").selectAll("li").remove();
 
     d3.select("#info_area").append("li")
-    .text("Province:"+prov_selected);
+    .text("Province:"+provinces_map[prov_selected]);
 
     d3.select("#info_area").append("li")
     .text("Temperatura media:"+get_temp_from_data(prov_selected)+" °C");
@@ -203,5 +203,14 @@ function load_file(){
      d3.json(pre_umid_file).then(function(pre_umid) {
             pre_umid_data = pre_umid  
     });
+    
+    d3.csv("DATA/id_provincie_tagliato.csv").then(function(data) {
+        for(row of data)
+        {
+            
+            provinces_map[row['PROVINCIA']] = row['CITTA']
+        }
+        //console.log(provinces_map);
+      });
     return t
 }
