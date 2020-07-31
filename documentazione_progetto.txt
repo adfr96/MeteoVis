@@ -1,4 +1,4 @@
-Visualization basede on d3.js for Meteo data
+Visualization based on d3.js for Meteo data
 
 Il lavoro svolto ha riguardato ESPERIMENTI DI VISUALIZZAZIONI DI DATI MULTIVARIATI SU MAPPA. I dati utilizzati sono dati meteorologici, in particolare raggruppati per provincia sul territorio Italiano. In particolare tali dati sono stati raccolti nel periodo di Luglio, quindi contengono informazioni relativamente a questo periodo.
 
